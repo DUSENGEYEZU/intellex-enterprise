@@ -1,0 +1,91 @@
+<!-- Import Connection modal (signed-in users only) -->
+<app-api-access-request
+  *ngIf="SESSION"
+  #connectionModal
+  [endpoint_group_id]="GROUP.id"
+  [workspace_id]="GROUP.workspace_id"
+></app-api-access-request>
+
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div class="col-md-8">
+        <h3 class="fw-bold mb-3">{{ GROUP.name || PAGE_TITLE || 'API group' }}</h3>
+        <p class="op-7 mb-2 text-muted" *ngIf="SESSION">
+            <span class="badge badge-light cursor-pointer">{{ GROUP.integrations_count }} integrations</span>
+        </p>
+        <p class="text-muted small mb-0">
+          This page lists only APIs that are <strong>both</strong> in this group <strong>and</strong> published on the marketplace from
+          <strong>Endpoints</strong>. Publishing the group alone does not publish each API. No login is required to read the docs below.
+        </p>
+        <p class="text-muted mt-2">{{ GROUP.description }}</p>
+    </div>
+</div>
+
+<div class="alert alert-warning" *ngIf="loadError && !loader">
+  <p class="mb-2 fw-semibold">{{ loadError }}</p>
+  <p class="small mb-2">
+    The marketplace only shows a group after a workspace admin turns on <strong>Publish catalog</strong> in
+    <strong>Endpoints → API Groups</strong>. Each API in the group must also be published from Endpoints first.
+  </p>
+  <a *ngIf="SESSION" routerLink="/endpoints/groups" class="btn btn-sm btn-primary">Open API Groups to publish</a>
+  <p *ngIf="!SESSION" class="small text-muted mb-0">
+    Sign in as the publisher, or ask them to publish the group so this shared link works.
+  </p>
+</div>
+
+<div class="card" *ngIf="!loadError">
+    <div class="card-header">
+        <div class="row">
+            <div class="col-sm-8">
+              <h4 class="mb-0">
+                <strong>Published on this catalog</strong> ({{ GROUP.members.length }})
+              </h4>
+              <p class="small text-muted mb-0 mt-1" *ngIf="!loader && GROUP.group_member_count > 0">
+                {{ GROUP.group_member_count }} API(s) in this group in the workspace;
+                <span *ngIf="GROUP.members.length < GROUP.group_member_count"
+                  ><strong>{{ GROUP.group_member_count - GROUP.members.length }}</strong> not on the marketplace yet.</span
+                >
+                <span *ngIf="GROUP.members.length === GROUP.group_member_count">all are published here.</span>
+              </p>
+            </div>
+            <div class="col-sm-4 text-sm-end" *ngIf="SESSION && GROUP.id">
+                <button type="button" class="btn btn-secondary btn-round" data-bs-toggle="modal"
+                        data-bs-target="#connectionModal"><i class="fa fa-plus"></i> Connect to all</button>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+        <div *ngIf="loader" class="text-center"><span class="loader"></span></div>
+        <div
+          class="alert alert-info small mb-0"
+          *ngIf="loader === false && !loadError && GROUP.group_member_count > 0 && GROUP.members.length === 0"
+        >
+          This group has <strong>{{ GROUP.group_member_count }}</strong> API(s), but <strong>none are marketplace-published</strong> yet, so the list is empty.
+          In <strong>Endpoints → API Groups</strong>, use <strong>Publish public catalog</strong> once (it publishes every API in the group), or open <strong>Endpoints</strong> and use <strong>Publish</strong> on each API, then refresh this page.
+          <a *ngIf="SESSION" routerLink="/endpoints" class="alert-link d-inline-block mt-1">Go to Endpoints</a>
+          <a *ngIf="SESSION" routerLink="/endpoints/groups" class="alert-link d-inline-block mt-1 ms-2">API Groups</a>
+        </div>
+        <p class="text-center text-muted mb-0" *ngIf="loader === false && !loadError && GROUP.group_member_count === 0 && GROUP.members.length === 0">
+          No APIs are in this group yet. Add endpoints in <strong>Endpoints → API Groups</strong>, then publish each API from <strong>Endpoints</strong>.
+          <span *ngIf="SESSION"> <a routerLink="/endpoints/groups">Open API Groups</a></span>
+        </p>
+        <div *ngIf="GROUP.members.length > 0">
+            <table class="table" style="border-top: 0">
+                <tbody>
+                    <tr *ngFor="let member of GROUP.members">
+                        <td>
+                            <a [routerLink]="['/marketplace/endpoint']" [queryParams]="{ id: member.id, title: member.summary, referer: 'marketplace/group', group: GROUP.id }"
+                              ><span class="badge badge-light me-2">{{ member.method }}</span> {{ member.summary }}</a>
+                            <br />
+                            <a class="small" [routerLink]="['/marketplace/endpoint']" [queryParams]="{ id: member.id, title: member.summary, referer: 'marketplace/group', group: GROUP.id }">View documentation</a>
+                            <br *ngIf="member.added_at" />
+                            <small class="text-muted" *ngIf="member.added_at">Added on {{ member.added_at | date : 'medium' }}</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+

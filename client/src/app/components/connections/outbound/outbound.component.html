@@ -1,0 +1,109 @@
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div>
+        <h3 class="fw-bold mb-3">Outbound Connections <span *ngIf="loader == true" class="loader"
+                style="margin-left: 20px;"></span></h3>
+        <p class="op-7 mb-2">This is where your api keys are managed. When you request connection to external APIs, you will be given an api key to use in your subsequent requests, and these keys will be available here.
+        </p>
+    </div>
+</div>
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" aria-current="page" id="endpoints-tab" data-bs-toggle="tab" data-bs-target="#endpoints" type="button" role="tab" aria-controls="endpoints" aria-selected="true" >{{ENDPOINT_CONNECTIONS.length}} Endpoints</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="Groups-tab" data-bs-toggle="tab" data-bs-target="#Groups" type="button" role="tab" aria-controls="Groups" aria-selected="false">{{GROUP_CONNECTIONS.length}} Groups</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <!-- Tab Content -->
+        <div class="tab-content" id="apiTabsContent">
+            <!-- Connections to endpoints -->
+            <div class="tab-pane fade show active" id="endpoints" role="tabpanel" aria-labelledby="endpoints-tab">
+                <div class="p-3">
+                    <p class="text-center" *ngIf="ENDPOINT_CONNECTIONS.length==0">You have not yet integrated with any external APIs.</p>
+                    <div class="table-responsive" *ngIf="ENDPOINT_CONNECTIONS.length > 0">
+                        <table class="table">
+                            <thead>
+                                <th>Publisher</th>
+                                <th>API</th>
+                                <th class="text-end">Status</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let connection of ENDPOINT_CONNECTIONS">
+                                    <td nowrap>{{connection.producer_workspace_name}}<br>
+                                        <small><span class="text-muted">{{connection.service_name}}</span> | {{connection.created_at | date}}</small>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/marketplace/endpoint']" [queryParams]="{'id': connection.endpoint_id, 'title': connection.endpoint_summary}">{{connection.endpoint_summary}}</a> <br>
+                                        <p class="mt-3" *ngIf="connection.api_key">
+                                            <strong>api-key</strong><span class="text-code text-muted" style="padding-top: 9px; padding-bottom: 9px;">{{connection.api_key}}</span> <br>
+                                            <small class="text-muted">Place 'api-key' in your request headers</small>
+                                        </p>
+                                    </td>
+                                    <td class="text-end" nowrap>
+                                        <span *ngIf="connection.status === 'GRANTED'" class="badge text-primary">{{connection.status}}</span>
+                                        <span *ngIf="connection.status === 'DENIED'" class="badge text-danger">{{connection.status}}</span>
+                                        <span *ngIf="connection.status === 'NEW'" class="badge text-muted">{{connection.status}}</span> 
+                                        <br>
+                                        <small *ngIf="connection.status === 'DENIED' || connection.status === 'GRANTED'" class="text-muted">{{connection.granted_at | date:'medium'}}</small> 
+                                        <small *ngIf="connection.status === 'NEW'" class="text-muted">{{connection.created_at | date:'medium'}}</small> 
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connections to Groups -->
+            <div class="tab-pane fade" id="Groups" role="tabpanel" aria-labelledby="Groups-tab">
+                <div class="p-3">
+                    <p class="text-center" *ngIf="GROUP_CONNECTIONS.length==0">You have not yet integrated with any external API groups.</p>
+                    <div class="table-responsive" *ngIf="GROUP_CONNECTIONS.length > 0">
+                        <table class="table">
+                            <thead>
+                                <th>Publisher</th>
+                                <th>Group</th>
+                                <th class="text-end">Status</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let connection of GROUP_CONNECTIONS">
+                                    <td nowrap>{{connection.producer_workspace_name}}<br>
+                                        <small>Requested on {{connection.created_at | date}}</small>
+                                    </td>
+                                    <td>
+                                        <a [routerLink]="['/marketplace/endpoint/group']" [queryParams]="{'id': connection.group_id, 'name': connection.group_name, 'desc':connection.group_description, 'ws':connection.workspace_id}">{{connection.group_name}}</a> <br>
+                                        <p class="mt-3" *ngIf="connection.api_key">
+                                            <strong>api-key</strong><span class="text-code text-muted" style="padding-top: 9px; padding-bottom: 9px;">{{connection.api_key}}</span> <br>
+                                            <small class="text-muted">Place 'api-key' in your request headers</small>
+                                        </p>
+                                    </td>
+                                    <td class="text-end" nowrap>
+                                        <span *ngIf="connection.status === 'GRANTED'" class="badge text-primary">{{connection.status}}</span>
+                                        <span *ngIf="connection.status === 'DENIED'" class="badge text-danger">{{connection.status}}</span>
+                                        <span *ngIf="connection.status === 'NEW'" class="badge text-muted">{{connection.status}}</span> 
+                                        <br>
+                                        <small *ngIf="connection.status === 'DENIED' || connection.status === 'GRANTED'" class="text-muted">{{connection.granted_at | date:'medium'}}</small> 
+                                        <small *ngIf="connection.status === 'NEW'" class="text-muted">{{connection.created_at | date:'medium'}}</small> 
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

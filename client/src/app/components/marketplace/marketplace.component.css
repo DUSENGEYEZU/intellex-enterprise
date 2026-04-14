@@ -1,0 +1,104 @@
+.btn-outline-alt{
+    border-color: #270650;
+    color: #270650;
+  }
+
+.btn-outline-alt:hover {
+    color: #ffffff;
+    background-color: #270650;
+}
+  .badge-black{
+    background-color: #270650;
+    font-size: small;
+  }
+
+  .btn-filter{
+    color: #5f5f5f;
+  }
+
+.btn-filter:hover,
+.btn-filter:focus,
+.btn-filter:active{
+    border: 0px;
+    border-bottom: 2px solid #270650;
+    color: #270650;
+}
+
+  .btn-secondary{
+    background-color: #270650 !important;
+    color: white;
+    border: 1px solid #270650 !important;
+  }
+
+  /* DISPLAY SKELETON - LOADER */
+  @keyframes pulse {
+    0% {
+        background-color: #94A3B8;
+    }
+
+    50% {
+        background-color: #CBD5E1;
+    }
+
+    100% {
+        background-color: #94A3B8;
+    }
+}
+.product-loader-skeleton{
+    display: flex;
+}
+.card-skeleton{
+    display: flex;
+      justify-content: space-around;
+      padding: 20px;
+      margin: 20px;
+      border-radius: 3px;
+      background-color: #E2E8F0;
+      box-shadow:
+        0 9px 33px rgba(0, 0, 0, 0.07);
+}
+
+.card-img-skeleton{
+    margin-top: 10px;;
+    width: 80%;
+    height: 100px;
+    background-color: #94A3B8;
+    border: none;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.category-skeleton{
+    display: block;
+    width: 50%;
+    height: 8px;
+    background-color: #94A3B8;
+    margin: auto;
+    animation: pulse 2s infinite ease-in-out;
+}
+.product-name-skeleton{
+    width: 90%;
+    height: 10px;
+    margin: auto;
+    margin-top: 5px;
+    background-color: #94A3B8;
+    animation: pulse 2s infinite ease-in-out;
+}
+.product-price-skeleton{
+    display: block;
+    width: 50%;
+    height: 10px;
+    background-color: #94A3B8;
+    margin: auto;
+    margin-top: 10px;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+  /* DISPLAY SKELETON - LOADER */
+
+  /* MAP STYLE */
+  #map { 
+    position: relative; 
+    height: 70vh;
+    border-radius: 10px;
+
+  }

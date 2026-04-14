@@ -1,0 +1,572 @@
+<div class="row mb-5">
+    <div class="col-md-8 align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+        <h3 class="fw-bold mb-3">Analytics <span *ngIf="loader == true" class="loader"
+                style="margin-left: 20px;"></span></h3>
+    </div>
+    <div class="col-md-4">
+        <div class="input-group">
+            <input [(ngModel)]="DATES.start" (change)="fetchTimeSeriesAnalytics()" class="form-control"
+                placeholder="dd-mm-yyyy" type="date"> <span style="
+            padding: 4px 15px 0px 0px;
+            background: #a6a6a6;
+            height: 3px;
+            margin-top: 21px;
+            margin-right: 6px;
+            margin-left: 6px;
+        "></span>
+            <input [(ngModel)]="DATES.end" (change)="fetchTimeSeriesAnalytics()" class="form-control"
+                placeholder="dd-mm-yyyy" type="date">
+        </div>
+    </div>
+</div>
+
+<!-- Sales Insights -->
+<!-- <div class="col-md-8 align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-2">
+    <h5 class="fw-bold mb-3">Sales Insights</h5>
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card card-round card-secondary bg-secondary-gradient">
+            <div class="card-body bubble-shadow">
+                <h1>{{INBOUND_TRAFFIC.TOTAL | number}}</h1>
+                <h5 class="op-8">Calls to your APIs</h5>
+                <div class="pull-right mt-2" style="padding-bottom: 13px;">
+                    <span class="op-8">Including freemium calls</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-round card-secondary bg-secondary-gradient">
+            <div class="card-body bubble-shadow">
+                <h1>{{INBOUND_TRAFFIC.PASSED | number}}</h1>
+                <h5 class="op-8">Billable API Calls</h5>
+                <div>
+                    <span class="pull-left op-8 mt-2 mb-3">By paying subscribers </span>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-primary card-round bubble-shadow" style="max-height: 162px;">
+            <div class="card-header">
+                <div class="card-head-row">
+                    <div class="card-title">Revenue</div>
+                </div>
+                <div class="card-category">{{unit_api_call_price | currency}} per billable call</div>
+            </div>
+            <div class="card-body pb-0">
+                <div class="mb-4">
+                    <h1>{{INBOUND_TRAFFIC.PASSED * 0.1 | currency}}</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<!-- <div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row card-tools-still-right">
+                    <h4 class="card-title">Best Selling APIs</h4>
+                    <div class="card-tools">
+                        <button class="btn btn-icon btn-xs btn-refresh-card">
+                            <span class="fa fa-sync-alt"></span>
+                        </button>
+                    </div>
+                </div>
+                <p class="card-category">
+                    Top endpoints that have received the most calls
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div>
+                        <div class="table-responsive table-hover table-sales" style="height: 338px;">
+                            <p class="text-center" style="font-size: 23pt;font-weight: 900;opacity: 0.2;margin-top: 33px;">Nothing to show</p>
+                            <p class="text-center">Data will show here when you start earning</p>
+                            <table class="table" style="display: none;">
+                                <tbody>
+                                    <tr>
+                                        <td nowrap><i class="fas fa-code"></i> Indonesia is the most a,mazing country in
+                                            the world</td>
+                                        <td nowrap class="text-end">23 calls</td>
+                                        <td nowrap class="text-end">42.18 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-code"></i> USA</td>
+                                        <td class="text-end">240 calls</td>
+                                        <td class="text-end">4.36 USD</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-header">
+                <div class="card-head-row card-tools-still-right">
+                    <h4 class="card-title">Best Selling Products</h4>
+                    <div class="card-tools">
+                        <button class="btn btn-icon btn-xs btn-refresh-card">
+                            <span class="fa fa-sync-alt"></span>
+                        </button>
+                    </div>
+                </div>
+                <p class="card-category">
+                    Top products that are most sought after
+                </p>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div>
+                        <div class="table-responsive table-hover table-sales" style="height: 338px;">
+                            <p class="text-center" style="font-size: 23pt;font-weight: 900;opacity: 0.2;margin-top: 33px;">Nothing to show</p>
+                            <p class="text-center">Data will show here when you start earning</p>
+                            <table class="table" style="display: none;">
+                                <tbody>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> Indonesia</td>
+                                        <td class="text-end">23 calls</td>
+                                        <td class="text-end">42.18 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> USA</td>
+                                        <td class="text-end">240 calls</td>
+                                        <td class="text-end">4.36 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> Australia</td>
+                                        <td class="text-end">119 calls</td>
+                                        <td class="text-end">2.16 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> Russia</td>
+                                        <td class="text-end">1.081 calls</td>
+                                        <td class="text-end">19.65 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> China</td>
+                                        <td class="text-end">1.100 calls</td>
+                                        <td class="text-end">20 USD</td>
+                                    </tr>
+                                    <tr>
+                                        <td><i class="fas fa-cube"></i> Brasil</td>
+                                        <td class="text-end">640 calls</td>
+                                        <td class="text-end">11.63 USD</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> -->
+
+<div class="col-md-8 align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-2">
+    <h5 class="fw-bold mb-3">Traffic Insights</h5>
+</div>
+
+<div class="row row-card-no-pd">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-sign-in-alt"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Inbound</p>
+                            <h4 class="card-title">{{INBOUND_TRAFFIC.TOTAL | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="icon-check text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Passed</p>
+                            <h4 class="card-title">{{INBOUND_TRAFFIC.PASSED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="icon-close text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Blocked</p>
+                            <h4 class="card-title">{{INBOUND_TRAFFIC.BLOCKED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Failed <small class="text-danger"></small></p>
+                            <h4 class="card-title">{{INBOUND_TRAFFIC.FAILED}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row row-card-no-pd bg-light">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-sign-out-alt text-muted"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Outbound</p>
+                            <h4 class="card-title">{{OUTBOUND_TRAFFIC.TOTAL | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="icon-check text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Passed</p>
+                            <h4 class="card-title">{{OUTBOUND_TRAFFIC.PASSED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="icon-close text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Blocked</p>
+                            <h4 class="card-title">{{OUTBOUND_TRAFFIC.BLOCKED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-exclamation-triangle text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Failed</p>
+                            <h4 class="card-title">{{OUTBOUND_TRAFFIC.FAILED}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-8 align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-2">
+    <h5 class="fw-bold mb-3">Integrations (Connections)</h5>
+</div>
+
+<div class="row row-card-no-pd">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-hands-helping"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Inbound</p>
+                            <h4 class="card-title">{{INBOUND_INTEGRATIONS.TOTAL | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-handshake text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Granted</p>
+                            <h4 class="card-title">{{INBOUND_INTEGRATIONS.GRANTED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-handshake text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Denied</p>
+                            <h4 class="card-title">{{INBOUND_INTEGRATIONS.DENIED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-clock text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Pending</p>
+                            <h4 class="card-title">{{INBOUND_INTEGRATIONS.PENDING}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row row-card-no-pd bg-light">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-hands-helping text-muted"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Outbound</p>
+                            <h4 class="card-title">{{OUTBOUND_INTEGRATIONS.TOTAL | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-handshake text-success"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Granted</p>
+                            <h4 class="card-title">{{OUTBOUND_INTEGRATIONS.GRANTED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-handshake text-danger"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Denied</p>
+                            <h4 class="card-title">{{OUTBOUND_INTEGRATIONS.DENIED | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round bg-light">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-5">
+                        <div class="icon-big text-center">
+                            <i class="fas fa-clock text-warning"></i>
+                        </div>
+                    </div>
+                    <div class="col-7 col-stats">
+                        <div class="numbers">
+                            <p class="card-category">Pending <small class="text-danger"></small></p>
+                            <h4 class="card-title">{{OUTBOUND_INTEGRATIONS.PENDING}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-primary-x bubble-shadow-small">
+                            <i class="fas fa-cube"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                            <p class="card-category nowrap">My Products</p>
+                            <h4 class="card-title">{{SERVICES_COUNT | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-info-x bubble-shadow-small">
+                            <i class="fas fa-code"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                            <p class="card-category nowrap">My Endpoints</p>
+                            <h4 class="card-title">{{ENDPOINTS_COUNT | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-info-x bubble-shadow-small">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0">
+                        <div class="numbers">
+                            <p class="card-category nowrap">Public</p>
+                            <h4 class="card-title">{{PUBLIC_ENDPOINTS | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+        <div class="card card-stats card-round">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-icon">
+                        <div class="icon-big text-center icon-info-x bubble-shadow-small">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                    </div>
+                    <div class="col col-stats ms-3 ms-sm-0" style="display: block;">
+                        <div class="numbers">
+                            <p class="card-category nowrap">Plan: <strong>{{SUBSCRIPTION_PLAN.PLAN}}</strong></p>
+                            <h4 class="card-title">{{SUBSCRIPTION_PLAN.CALLS | number}} / {{SUBSCRIPTION_PLAN.LIMIT | number}}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

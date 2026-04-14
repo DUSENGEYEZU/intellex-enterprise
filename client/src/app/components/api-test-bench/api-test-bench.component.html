@@ -1,0 +1,322 @@
+<div class="api-test-bench">
+  <div class="method-bar">
+    <div class="custom-select-wrapper">
+      <select
+        class="method-select"
+        [ngClass]="'method-' + method()"
+        [(ngModel)]="NEW_ENDPOINT().method"
+        (ngModelChange)="changeMethod($event)"
+      >
+        <option value="GET">GET</option>
+        <option value="POST">POST</option>
+        <option value="PUT">PUT</option>
+        <option value="DELETE">DELETE</option>
+        <option value="PATCH">PATCH</option>
+        <option value="OPTIONS">OPTIONS</option>
+      </select>
+      <i class="fa fa-chevron-down dropdown-icon"></i>
+    </div>
+
+    <input class="url-input" type="text" [value]="endpoint().url" (input)="onUrlInputChange($event)" />
+
+    <button class="send-button" (click)="sendApiTestRequest()">
+      <span *ngIf="!loader()">
+        <i class="fa fa-paper-plane" aria-hidden="true"></i> &nbsp; Send
+      </span>
+      <span
+        *ngIf="loader() == true"
+        class="loader"
+        style="margin-left: 20px"
+      ></span>
+    </button>
+  </div>
+  <div class="card mb-3 mt-3">
+    <div class="card-header" style="background: #d7d7e3">Request</div>
+    <div class="card-body">
+      <div class="tabs">
+        <div
+          *ngFor="let tab of requestTabs"
+          class="tab"
+          [class.active]="isRequestTabActive(tab)"
+          (click)="selectRequestTab(tab)"
+        >
+          {{ tab }}
+          <span *ngIf="tab === 'Params' && NEW_ENDPOINT().params.length > 0"
+            >({{ NEW_ENDPOINT().params.length }})</span
+          >
+          <span *ngIf="tab === 'Headers' && NEW_ENDPOINT().headers.length > 0"
+            >({{ NEW_ENDPOINT().headers.length }})</span
+          >
+        </div>
+      </div>
+      <div class="tab-content">
+        <ng-container [ngSwitch]="selectedRequestTab()">
+          <div *ngSwitchCase="'Params'">
+            <!--if params is empty tell the user and format differently -->
+            @if(NEW_ENDPOINT().params.length > 0){
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 50%">Key</th>
+                  <th style="width: 50%">Value</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Use *ngFor to dynamically generate rows based on queryParams array -->
+                <tr *ngFor="let param of NEW_ENDPOINT().params; let i = index">
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="param.key"
+                      class="form-control"
+                      placeholder="Key"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="param.value"
+                      class="form-control"
+                      placeholder="Value"
+                    />
+                  </td>
+                  <td class="cursor-pointer" (click)="removeQueryParam(i)">
+                    <i class="fa fa-times"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <button class="btn btn-outline-alt" (click)="addQueryParam()">
+              <i class="fa fa-plus"></i> Params
+            </button>
+            } @else {
+            <div
+              class="d-flex flex-column justify-content-center align-items-center"
+            >
+              <p class="mb-2">There are no parameters yet.</p>
+              <button class="btn btn-outline-alt" (click)="addQueryParam()">
+                <i class="fa fa-plus"></i> Params
+              </button>
+            </div>
+            }
+          </div>
+
+          <div *ngSwitchCase="'Headers'">
+            @if(NEW_ENDPOINT().headers.length > 0){
+            <table class="table">
+              <thead>
+                <tr>
+                  <th style="width: 50%">Key</th>
+                  <th style="width: 50%">Value</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Use *ngFor to dynamically generate rows based on queryParams array -->
+
+                <tr
+                  *ngFor="let header of NEW_ENDPOINT().headers; let i = index"
+                >
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="header.key"
+                      class="form-control"
+                      placeholder="Key"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="header.value"
+                      class="form-control"
+                      placeholder="Value"
+                    />
+                  </td>
+                  <td class="cursor-pointer" (click)="removeHeader(i)">
+                    <i class="fa fa-times"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="btn btn-outline-alt" (click)="addHeaders()">
+              <i class="fa fa-plus"></i> Headers
+            </button>
+            } @else{
+
+            <div
+              class="d-flex flex-column justify-content-center align-items-center"
+            >
+              <p class="mb-2">There are no parameters yet.</p>
+              <button class="btn btn-outline-alt" (click)="addHeaders()">
+                <i class="fa fa-plus"></i> Headers
+              </button>
+            </div>
+
+            }
+          </div>
+
+          <div *ngSwitchCase="'Body'">
+            <div class="d-flex">
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="bodyType"
+                  id="jsonRadio"
+                  [(ngModel)]="NEW_ENDPOINT().body_type"
+                  value="json"
+                  (change)="onBodyTypeChange('json')"
+                />
+                <label class="form-check-label" for="jsonRadio">JSON</label>
+              </div>
+
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="radio"
+                  name="bodyType"
+                  id="formDataRadio"
+                  [(ngModel)]="NEW_ENDPOINT().body_type"
+                  value="formData"
+                  (change)="onBodyTypeChange('formData')"
+                />
+                <label class="form-check-label" for="formDataRadio"
+                  >Form Data</label
+                >
+              </div>
+            </div>
+            <div *ngIf="NEW_ENDPOINT().body_type === 'json'">
+              <!-- JSON Editor -->
+              <app-editor
+                [(code)]="NEW_ENDPOINT().sample_request_object"
+              ></app-editor>
+            </div>
+
+            <div *ngIf="NEW_ENDPOINT().body_type === 'formData'">
+              <!-- Form Data Editor -->
+
+              @if(NEW_ENDPOINT().form_data.length > 0){
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Value type</th>
+                    <th>Value</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    *ngFor="
+                      let param of NEW_ENDPOINT().form_data;
+                      let i = index
+                    "
+                  >
+                    <td>
+                      <input
+                        type="text"
+                        [(ngModel)]="param.key"
+                        class="form-control"
+                        placeholder="Key"
+                      />
+                    </td>
+                    <td>
+                      <!-- Value Type Select for Text or File -->
+                      <select
+                        [(ngModel)]="param.valueType"
+                        class="form-control"
+                      >
+                        <option value="text">Other</option>
+                        <option value="file">File</option>
+                      </select>
+                    </td>
+                    <td>
+                      <input
+                        type="text"
+                        *ngIf="param.valueType !== 'file'"
+                        [(ngModel)]="param.value"
+                        class="form-control"
+                        placeholder="Value"
+                      />
+                      <!-- File Input will appear if 'file' is selected as valueType -->
+                      <span class="d-flex">
+                        <input
+                          type="file"
+                          *ngIf="param.valueType === 'file'"
+                          (change)="onFileChange($event, i)"
+                        />
+
+                        <!-- Show filename if a file was selected -->
+                        <div
+                          *ngIf="
+                            param.valueType === 'file' && param.value;
+                            instanceof: File
+                          "
+                          class="mt-1 text-muted"
+                        >
+                          {{ param.value.name }}
+                        </div>
+                      </span>
+                    </td>
+
+                    <td
+                      class="cursor-pointer"
+                      (click)="removeQueryFormParam(i)"
+                    >
+                      <i class="fa fa-times"></i>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+              <!-- Button to Add New Param -->
+
+              <button class="btn btn-outline-alt" (click)="addNewFormParam()">
+                <i class="fa fa-plus"></i> Params
+              </button>
+              } @else{
+
+              <div
+                class="d-flex flex-column justify-content-center align-items-center"
+              >
+                <p class="mb-2">There are no Form Data yet.</p>
+                <button class="btn btn-outline-alt" (click)="addNewFormParam()">
+                  <i class="fa fa-plus"></i> Params
+                </button>
+              </div>
+
+              }
+            </div>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mb-3 mt-3">
+    <div class="card-header" style="background: #d7d7e3">Response</div>
+    <div class="card-body">
+      <div class="tabs">
+        <div
+          *ngFor="let tab of responseTabs"
+          class="tab"
+          [class.active]="isResponseTabActive(tab)"
+          (click)="selectResponseTab(tab)"
+        >
+          {{ tab }}
+        </div>
+      </div>
+      <div class="tab-content">
+        <ng-container [ngSwitch]="selectedResponseTab()">
+          <div *ngSwitchCase="'Body'">
+            <app-editor
+              [(code)]="NEW_ENDPOINT().sample_response_object"
+            ></app-editor>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Env and secrets (use .env.example patterns in docs — never commit real values)
+!.env.example
+server/.env
+!server/.env.example
+
+# Build output
+dist/
+**/dist/
+
+# OS / IDE
+.DS_Store
+.idea/
+*.log
+config.bat

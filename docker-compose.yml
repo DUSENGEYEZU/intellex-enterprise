@@ -1,0 +1,41 @@
+services:
+  intellex_db:
+    image: postgres:17-alpine
+    container_name: intellex-db
+    restart: always
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - intellex_data:/var/lib/postgresql/data
+    ports:
+      - "${DATABASE_PORT}:5432"
+
+  intellex_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: intellexenterprise/intellex-enterprise
+    container_name: intellex-app
+    ports:
+      - "${SERVER_PORT}:9000" # backend
+      - "${WEB_CLIENT_PORT}:9001" # frontend
+    depends_on:
+      - intellex_db
+    environment:
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD}
+      DATABASE_NAME: ${POSTGRES_DB}
+      NOTIFICATION_API: ${NOTIFICATION_API}
+      SECRET: ${SECRET}
+      DOMAIN_HOST: ${DOMAIN_HOST}
+      WEB_CLIENT_URL: ${WEB_CLIENT_URL}
+      SERVER_PORT: ${SERVER_PORT}
+      API_KEY: ${API_KEY}
+    restart: always
+
+volumes:
+  intellex_data:

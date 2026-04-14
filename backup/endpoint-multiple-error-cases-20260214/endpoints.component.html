@@ -1,0 +1,1011 @@
+<div
+  class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+>
+  <div class="col-md-8">
+    <h3 class="fw-bold mb-3">
+      Manage Endpoints
+      <span
+        *ngIf="loader == true"
+        class="loader"
+        style="margin-left: 20px"
+      ></span>
+    </h3>
+    <p>You have {{ ENDPOINTS.length }} endpoints</p>
+  </div>
+  <div class="ms-md-auto py-2 py-md-0">
+    <button
+      type="button"
+      class="btn btn-outline-alt btn-round"
+      data-bs-toggle="modal"
+      data-bs-target="#endpointModal"
+      (click)="clearEditableEndpoint(); fetchTargetMarkets()"
+    >
+      <i class="fa fa-plus"></i> Add Endpoint
+    </button>
+  </div>
+</div>
+
+<div class="row">
+  <div class="card" style="border-radius: 40px">
+    <div class="card-body">
+      <div class="input-group">
+        <div class="input-group-prepend">
+          <div
+            class="input-group-text"
+            style="background: inherit; border: 0px; margin-top: 7px"
+          >
+            <i class="fas fa-search text-muted" style="font-size: large"></i>
+          </div>
+        </div>
+        <input
+          id="search"
+          type="text"
+          class="form-control"
+          placeholder="Search endpoints here..."
+          (keyup)="search($event.target)"
+          style="border: 0px"
+        />
+      </div>
+    </div>
+  </div>
+  <!-- Endpoints not found -->
+  <div class="card" *ngIf="ENDPOINTS.length === 0 && loader === false">
+    <div class="card-body">
+      <p>
+        No endpoints found!
+        <a
+          class="link"
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#endpointModal"
+          (click)="clearEditableEndpoint(); fetchTargetMarkets()"
+          >Add one now</a
+        >.
+      </p>
+    </div>
+  </div>
+  <!-- Endpoints not found -->
+  <div
+    class="card"
+    *ngFor="let endpoint of ENDPOINTS"
+    style="border: 1px solid #27035045"
+  >
+    <div class="card-header">
+      <div class="row">
+        <div class="col-sm-8">
+          <!-- <h5 style="margin-top: 14px;"> -->
+          <div class="card-title">
+            <span
+              *ngIf="endpoint.method === 'GET'"
+              class="badge badge-secondary"
+              >{{ endpoint.method }}</span
+            >
+            <span
+              *ngIf="endpoint.method === 'POST'"
+              class="badge badge-primary"
+              >{{ endpoint.method }}</span
+            >
+            <span *ngIf="endpoint.method === 'PUT'" class="badge badge-info">{{
+              endpoint.method
+            }}</span>
+            <span
+              *ngIf="endpoint.method === 'PATCH'"
+              class="badge badge-success"
+              >{{ endpoint.method }}</span
+            >
+            <span
+              *ngIf="endpoint.method === 'DELETE'"
+              class="badge badge-danger"
+              >{{ endpoint.method }}</span
+            >
+            <span
+              *ngIf="endpoint.method === 'OPTION'"
+              class="badge badge-warning"
+              >{{ endpoint.method }}</span
+            >
+            <a
+              [routerLink]="['/marketplace/endpoint']"
+              [queryParams]="{
+                id: endpoint.id,
+                title: endpoint.summary,
+                referer: 'endpoints'
+              }"
+            >
+              {{ endpoint.summary }}
+            </a>
+          </div>
+          <!-- </h5> -->
+          <span class="badge badge-light"
+            >{{ endpoint.call_fee | currency : "RWF" }} /call</span
+          >
+        </div>
+        <div class="col-sm-4 text-end" style="padding: 1%">
+          <div
+            class="btn-group"
+            role="group"
+            aria-label="Basic mixed styles example"
+          >
+            <button
+              (click)="setEditableEndpoint(endpoint.id)"
+              type="button"
+              class="btn btn-light"
+              data-bs-toggle="modal"
+              data-bs-target="#endpointModal"
+            >
+              <i class="fa fa-pen"></i>
+            </button>
+            <button
+              (click)="deleteEndpoint(endpoint.id)"
+              type="button"
+              class="btn btn-light"
+            >
+              <i class="fa fa-times" *ngIf="!loader"></i>
+              <span
+                *ngIf="loader == true"
+                class="loader"
+                style="margin-left: 20px"
+              ></span>
+            </button>
+            <button
+              style="white-space: nowrap"
+              *ngIf="endpoint.is_public === true"
+              type="button"
+              class="btn btn-secondary btn-round"
+              (click)="unpublishEndpoint(endpoint.id)"
+            >
+              <span *ngIf="!loader"
+                ><i class="fa fa-bolt" *ngIf="endpoint.is_open == true"></i
+                ><i
+                  class="fas fa-shield-alt"
+                  *ngIf="endpoint.is_open == false"
+                ></i>
+                Public</span
+              >
+              <span
+                *ngIf="loader == true"
+                class="loader"
+                style="margin-left: 20px"
+              ></span>
+            </button>
+            <button
+              style="white-space: nowrap"
+              *ngIf="endpoint.is_public === false"
+              type="button"
+              class="btn btn-light"
+              (click)="NEW_ENDPOINT.id = endpoint.id; resetAlert()"
+              data-bs-toggle="modal"
+              data-bs-target="#publishModal"
+            >
+              <span *ngIf="!loader"
+                ><i class="fas fa-share-square"></i> Publish</span
+              >
+              <span
+                *ngIf="loader == true"
+                class="loader"
+                style="margin-left: 20px"
+              ></span>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <p class="text-muted">{{ endpoint.description }}</p>
+        <!-- <span class="text-info cursor-pointer" (click)="toggleEndpointDetails(endpoint.id)">Expand Details <i class="fa fa-caret-down"></i></span> -->
+      </div>
+    </div>
+    <div class="card-body" id="{{ endpoint.id }}">
+      <div class="row">
+        <div class="col-md-12">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card">
+                <div class="card-header" style="background: #d7d7e3">
+                  <strong>Private URL</strong>
+                </div>
+                <div
+                  class="card-body"
+                  style="
+                    background: #eaeaea;
+                    font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono',
+                      'Liberation Mono', Menlo, Monaco, Consolas, monospace;
+                  "
+                >
+                  {{ endpoint.original_url }}
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" style="background: #d7d7e3">
+                  <strong>Public URL</strong>
+                </div>
+                <div
+                  class="card-body"
+                  style="
+                    background: #eaeaea;
+                    font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono',
+                      'Liberation Mono', Menlo, Monaco, Consolas, monospace;
+                  "
+                >
+                  {{ endpoint.url }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 mt-2" *ngIf="endpoint.method !== 'GET'">
+          <div class="card">
+            <div class="card-header" style="background: #d7d7e3; padding: 0px">
+              <div class="row">
+                <div
+                  class="col-sm-6"
+                  style="padding: 15px 0px 0px 33px; font-weight: 600"
+                >
+                  Sample Request
+                </div>
+                <div class="col-sm-6">
+                  <ul
+                    class="nav nav-pills nav-secondary nav-pills-no-bd"
+                    id="pills-tab-without-border"
+                    role="tablist"
+                  >
+                    <li
+                      *ngIf="endpoint.sample_request_object"
+                      class="nav-item submenu"
+                      role="presentation"
+                    >
+                      <a
+                        class="nav-link active"
+                        aria-selected="true"
+                        tabindex="-1"
+                        >JSON</a
+                      >
+                    </li>
+                    <li
+                      *ngIf="!endpoint.sample_request_object"
+                      class="nav-item submenu"
+                      role="presentation"
+                    >
+                      <a
+                        class="nav-link active"
+                        [routerLink]="['/marketplace/endpoint']"
+                        [queryParams]="{
+                          id: endpoint.id,
+                          title: endpoint.summary,
+                          referer: 'endpoints'
+                        }"
+                        aria-selected="false"
+                        >Form-Data</a
+                      >
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div
+              class="card-body"
+              style="background: #eaeaea"
+              *ngIf="endpoint.sample_request_object"
+            >
+              <pre
+                style="max-height: 250px; border-radius: 5px; padding: 10px"
+                >{{
+                  utilsService.parseJSON(endpoint.sample_request_object) | json
+                }}</pre
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="card">
+            <div class="card-header" style="background: #d7d7e3">
+              <strong>Sample Response</strong>
+            </div>
+            <div class="card-body" style="background: #eaeaea">
+              <pre
+                style="max-height: 250px; border-radius: 5px; padding: 10px"
+                >{{
+                  utilsService.parseJSON(endpoint.sample_response_object) | json
+                }}</pre
+              >
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12 mt-2">
+          <div class="card">
+            <div class="card-header" style="background: #e3d7d7">
+              <strong>Sample Error</strong>
+            </div>
+            <div class="card-body" style="background: #eaeaea">
+              <pre
+                style="max-height: 250px; border-radius: 5px; padding: 10px"
+                >{{
+                  utilsService.parseJSON(endpoint.sample_error_object) | json
+                }}</pre
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <span class="text-muted">
+        <span
+          ><strong><i class="fa fa-cube"></i> Product: </strong
+          >{{ getServiceName(endpoint.service_id) }}</span
+        >
+        <br />
+        <span
+          ><strong><i class="fa fa-building"></i> Industry: </strong
+          ><span *ngIf="!endpoint.target_industry"> Not specified</span>
+          {{
+            this.utilsService.formatFilters(endpoint.target_industry)
+              | titlecase
+          }}
+        </span>
+        <br />
+        <span
+          ><strong><i class="fa fa-globe"></i> Region: </strong>
+          <span *ngIf="!endpoint.target_industry"> Not specified</span>
+          {{
+            this.utilsService.formatFilters(endpoint.target_region) | titlecase
+          }}</span
+        >
+        <br />
+        <span
+          ><strong><i class="fa fa-map-pin"></i> Country: </strong>
+          <span *ngIf="!endpoint.target_industry"> Not specified</span>
+          {{
+            this.utilsService.formatFilters(endpoint.target_country) | titlecase
+          }}
+        </span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Publish Modal -->
+<div
+  class="modal fade bg-fade"
+  id="publishModal"
+  tabindex="1"
+  aria-labelledby="serviceModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="serviceModalLabel">
+          Publication Settings
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          {{ alert.success }}
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="btn-group" role="group">
+              <button
+                type="button"
+                class="btn btn-outline-dark dropdown-toggle"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                <i *ngIf="PUBLICATION_SETTING == 'open'" class="fa fa-bolt"></i
+                ><i
+                  *ngIf="PUBLICATION_SETTING == 'restricted'"
+                  class="fas fa-shield-alt"
+                ></i>
+                {{ PUBLICATION_SETTING | titlecase }}
+              </button>
+              <ul class="dropdown-menu">
+                <li>
+                  <a
+                    class="dropdown-item cursor-pointer"
+                    (click)="
+                      PUBLICATION_SETTING = 'restricted';
+                      $('#text-restricted').show();
+                      $('#text-open').hide()
+                    "
+                    ><i class="fas fa-shield-alt"></i> Restricted</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item cursor-pointer"
+                    (click)="
+                      PUBLICATION_SETTING = 'open';
+                      $('#text-restricted').hide();
+                      $('#text-open').show()
+                    "
+                    ><i class="fa fa-bolt"></i> Open</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <p id="text-open" style="display: none">
+              Anyone with the link will use the API withough authentication or
+              api key.
+            </p>
+            <p id="text-restricted">
+              Users will need to be authenticated and need to request access
+              before they can use the API.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" *ngIf="!alert.success">
+        <button
+          type="button"
+          id="submitButton"
+          class="btn btn-secondary form-control"
+          (click)="publishEndpoint(NEW_ENDPOINT.id)"
+        >
+          <span *ngIf="!loader">Publish</span>
+          <span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Publish Modal -->
+
+<!-- Service Modal -->
+<div
+  class="modal fade bg-fade"
+  id="serviceModal"
+  tabindex="1"
+  aria-labelledby="serviceModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="serviceModalLabel">New Product</h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          {{ alert.success }}
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlInput1" class="form-label"
+            >Product name</label
+          >
+          <input
+            [(ngModel)]="NEW_SERVICE.name"
+            type="text"
+            class="form-control"
+            id="exampleFormControlInput1"
+            placeholder="Ex: real estate listings"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Description</label
+          >
+          <textarea
+            [(ngModel)]="NEW_SERVICE.description"
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button
+          type="button"
+          id="submitButton"
+          class="btn btn-primary"
+          (click)="createService()"
+        >
+          <span *ngIf="!loader">Submit</span>
+          <span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Service Modal -->
+
+<!-- Endpoint Modal -->
+<div
+  class="modal modal-lg fade bg-fade"
+  id="endpointModal"
+  tabindex="1"
+  aria-labelledby="endpointModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="endpointModalLabel">
+          <span *ngIf="NEW_ENDPOINT.id">Edit</span
+          ><span *ngIf="!NEW_ENDPOINT.id">Add</span> Endpoint
+        </h1>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          {{ alert.success }}
+        </div>
+        <div class="mb-3">
+          <div class="input-group">
+            <span class="input-group-text" id="basic-addon3">Product</span>
+            <select
+              name=""
+              [(ngModel)]="NEW_ENDPOINT.service_id"
+              class="form-select"
+              aria-describedby="basic-addon3"
+            >
+              <option value="" disabled selected>Select a product</option>
+              <!-- Placeholder option -->
+              <option *ngFor="let service of SERVICES" [value]="service.id">
+                {{ service.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="text-end">
+          <span
+            >Can't see your product listed?
+            <a
+              type="button"
+              class="link"
+              data-bs-toggle="modal"
+              data-bs-target="#serviceModal"
+              >Create one now!</a
+            ></span
+          >
+        </div>
+        <div class="mb-5">
+          <label for="exampleFormControlInput1" class="form-label"
+            >Specify a Method and the URL*</label
+          ><br />
+          <div class="input-group mb-3">
+            <select
+              [(ngModel)]="NEW_ENDPOINT.method"
+              class="btns btn-outline-secondarys input-group-text"
+              id="select-addon1"
+            >
+              <option value="GET">GET</option>
+              <option value="POST">POST</option>
+              <option value="PUT">PUT</option>
+              <option value="PATCH">PATCH</option>
+              <option value="REQUEST">OPTIONS</option>
+              <option value="REQUEST">HEAD</option>
+              <option value="DELETE">DELETE</option>
+            </select>
+            <input
+              type="text"
+              [(ngModel)]="NEW_ENDPOINT.url"
+              (keyup)="setSampleURLMask()"
+              class="form-control"
+              placeholder="https://"
+            />
+          </div>
+          <span class="text-info">Use <strong><i>:param</i></strong> for PATH parameters. Example, https://domain.com/user/:email </span>
+        </div>
+        <div class="mb-5">
+          <!-- Select API Version -->
+          <label for="exampleFormControlInput1" class="form-label"
+            >Select URL Mask Option</label
+          >
+          <div class="input-group mb-3">
+            <select
+              [(ngModel)]="NEW_ENDPOINT.version"
+              (change)="setSampleURLMask(NEW_ENDPOINT.id)"
+              class="btns btn-outline-secondarys input-group-text"
+              id="select-addon1"
+            >
+              <option value="1">FULL MASK</option>
+              <option value="2">PARTIAL MASK</option>
+            </select>
+            <input
+              type="text"
+              [(ngModel)]="SAMPLE_URL_MASK"
+              class="form-control"
+              disabled="true"
+            />
+          </div>
+        </div>
+        <div class="mb-5">
+          <label for="exampleFormControlInput1" class="form-label"
+            >Summary*</label
+          >
+          <input
+            [(ngModel)]="NEW_ENDPOINT.summary"
+            type="text"
+            class="form-control"
+            id="exampleFormControlInput1"
+            placeholder="What does this endpoint do?"
+          />
+        </div>
+        <div class="mb-5">
+          <label for="exampleFormControlTextarea1" class="form-label"
+            >Description</label
+          >
+          <textarea
+            [(ngModel)]="NEW_ENDPOINT.description"
+            class="form-control"
+            id="exampleFormControlTextarea1"
+            rows="3"
+            placeholder="Describe in details what this endpoint does and how it works, and explain how URL parameters will be handled."
+          ></textarea>
+        </div>
+        <div class="card mb-5">
+          <div class="card-header" style="background: #d7d7e3">
+            Sample Query Params
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Use *ngFor to dynamically generate rows based on queryParams array -->
+                <tr *ngFor="let param of NEW_ENDPOINT.params; let i = index">
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="param.key"
+                      class="form-control"
+                      placeholder="Key"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="param.value"
+                      class="form-control"
+                      placeholder="Value"
+                    />
+                  </td>
+                  <td class="cursor-pointer" (click)="removeQueryParam(i)">
+                    <i class="fa fa-times"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="btn btn-label-info" (click)="addQueryParam()">
+              <i class="fa fa-plus"></i> Params
+            </button>
+          </div>
+        </div>
+        <div class="card mb-5 mt-5">
+          <div class="card-header" style="background: #d7d7e3">
+            Sample Headers
+          </div>
+          <div class="card-body">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Use *ngFor to dynamically generate rows based on queryParams array -->
+                <tr *ngFor="let header of NEW_ENDPOINT.headers; let i = index">
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="header.key"
+                      class="form-control"
+                      placeholder="Key"
+                    />
+                  </td>
+                  <td>
+                    <input
+                      type="text"
+                      [(ngModel)]="header.value"
+                      class="form-control"
+                      placeholder="Value"
+                    />
+                  </td>
+                  <td class="cursor-pointer" (click)="removeHeader(i)">
+                    <i class="fa fa-times"></i>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <button class="btn btn-label-info me-2" (click)="addHeaders()">
+              <i class="fa fa-plus"></i> Headers
+            </button>
+          </div>
+        </div>
+        <div class="card mb-5">
+          <div class="card-header" style="background: #d7d7e3">
+            <div class="row">
+              <div class="col-sm-6">Sample Request Object*</div>
+              <div class="col-sm-6">
+                <div class="form-check form-check-inline" style="padding: 0px">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="requestFormat"
+                    id="jsonFormat"
+                    value="json"
+                    [(ngModel)]="POST_PAYLOAD_TYPE"
+                    checked
+                  />
+                  <label class="form-check-label text-white" for="jsonFormat"
+                    >JSON</label
+                  >
+                </div>
+                <div class="form-check form-check-inline" style="padding: 0px">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    name="requestFormat"
+                    id="formDataFormat"
+                    value="multi_part"
+                    [(ngModel)]="POST_PAYLOAD_TYPE"
+                  />
+                  <label
+                    class="form-check-label text-white"
+                    for="formDataFormat"
+                    >Form-Data</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="col-sm-12">
+              <!-- Sample Request Data -->
+              <!-- Sample JSON -->
+              <textarea
+                *ngIf="POST_PAYLOAD_TYPE === 'json'"
+                [(ngModel)]="NEW_ENDPOINT.sample_request_object"
+                class="form-control"
+                id="exampleFormControlTextarea1"
+                rows="3"
+                placeholder="Sample JSON object"
+              ></textarea>
+
+              <!-- Sample Form Data -->
+              <div *ngIf="POST_PAYLOAD_TYPE === 'multi_part'">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <!-- Use *ngFor to dynamically generate rows based on formData array -->
+                    <tr
+                      *ngFor="
+                        let header of NEW_ENDPOINT.multi_part;
+                        let i = index
+                      "
+                    >
+                      <td>
+                        <input
+                          type="text"
+                          [(ngModel)]="header.key"
+                          class="form-control"
+                          placeholder="Key"
+                        />
+                      </td>
+                      <td>
+                        <input
+                          type="text"
+                          [(ngModel)]="header.value"
+                          class="form-control"
+                          placeholder="Value"
+                        />
+                      </td>
+                      <td
+                        class="cursor-pointer"
+                        (click)="removeMultipartFormData(i)"
+                      >
+                        <i class="fa fa-times"></i>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <button
+                  class="btn btn-label-info me-2"
+                  (click)="addMultipartFormData()"
+                >
+                  <i class="fa fa-plus"></i> Add field
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header" style="background: #d7d7e3">
+            Sample Response Object (JSON)*
+          </div>
+          <div class="card-body">
+            <textarea
+              [(ngModel)]="NEW_ENDPOINT.sample_response_object"
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              placeholder="Sample JSON object"
+            ></textarea>
+          </div>
+        </div>
+        <div class="card mb-3">
+          <div class="card-header" style="background: #e3d7d7">
+            Sample Error Object (JSON)*
+          </div>
+          <div class="card-body">
+            <textarea
+              [(ngModel)]="NEW_ENDPOINT.sample_error_object"
+              class="form-control"
+              id="exampleFormControlTextarea1"
+              rows="3"
+              placeholder="Sample JSON object"
+            ></textarea>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-2">
+              Specificy the target market. Leave blank if this endpoint is
+              applicable in all markets
+            </div>
+            <div class="row">
+              <div class="col-lg-4 mb-2">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon3"
+                    >Industry</span
+                  >
+                  <select
+                    name=""
+                    [(ngModel)]="NEW_ENDPOINT.target_industry"
+                    class="form-select"
+                    aria-describedby="basic-addon3"
+                  >
+                    <option value="" disabled selected>
+                      Select an industry
+                    </option>
+                    <!-- Placeholder option -->
+                    <option
+                      *ngFor="let industry of TARGET.industries"
+                      [value]="industry.id"
+                    >
+                      {{ industry.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-4 mb-2">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon3">Region</span>
+                  <select
+                    name=""
+                    [(ngModel)]="NEW_ENDPOINT.target_region"
+                    class="form-select"
+                    aria-describedby="basic-addon3"
+                  >
+                    <option value="" disabled selected>Select a region</option>
+                    <!-- Placeholder option -->
+                    <option
+                      *ngFor="let region of TARGET.regions"
+                      [value]="region.id"
+                    >
+                      {{ region.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+              <div class="col-lg-4 mb-2">
+                <div class="input-group">
+                  <span class="input-group-text" id="basic-addon3"
+                    >Country</span
+                  >
+                  <select
+                    name=""
+                    [(ngModel)]="NEW_ENDPOINT.target_country"
+                    class="form-select"
+                    aria-describedby="basic-addon3"
+                  >
+                    <option value="" disabled selected>Select a country</option>
+                    <!-- Placeholder option -->
+                    <option
+                      *ngFor="let country of TARGET.countries"
+                      [value]="country.code"
+                    >
+                      {{ country.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6 nowrap">
+            <div class="input-group">
+              <strong>Per-call fee: </strong><br />
+              <span
+                class="input-group-text"
+                id="basic-addon3"
+                style="background-color: white; border: 0px; font-size: large"
+                >RWF</span
+              >
+              <input
+                type="number"
+                class="form-control"
+                [(ngModel)]="NEW_ENDPOINT.call_fee"
+                aria-describedby="basic-addon3"
+                style="font-size: 2rem; border: 0px; border-bottom: 1px solid"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          id="dismissModal"
+          class="btn btn-outline-alt"
+          data-bs-dismiss="modal"
+        >
+          Close
+        </button>
+        <button
+          type="button"
+          id="submitButton"
+          class="btn btn-primary"
+          (click)="createOrUpdateEndpoint()"
+        >
+          <span *ngIf="!loader">Submit</span
+          ><span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Endpoint Modal -->
