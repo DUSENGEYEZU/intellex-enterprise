@@ -1,0 +1,439 @@
+<div
+  class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4"
+>
+  <div class="col-md-8">
+    <h3 class="fw-bold mb-1">API Groups</h3>
+    <p class="text-uppercase small text-muted fw-semibold mb-2" style="letter-spacing: 0.04em">
+      Public marketplace catalog
+    </p>
+    <p class="op-7 mb-2">
+      Organize your APIs into groups for easy sharing (grouped APIs also share
+      the same api-key). Anyone who has access to the API Group, also has access
+      to the members (endpoints) of the group.
+    </p>
+    <p class="small text-muted mb-0">
+      Every group row shows <strong>Public: ON</strong> (green) or <strong>Public: OFF</strong> (gray). Turn
+      <strong>Public</strong> on with <strong>Publish public catalog</strong> so the shared marketplace link works without login.
+      Only APIs you have already published individually are listed on the public page.
+    </p>
+  </div>
+  <div class="ms-md-auto py-2 py-md-0">
+    <button
+      type="button"
+      (click)="resetSelectedGroup()"
+      class="btn btn-outline-alt btn-round"
+      data-bs-toggle="modal"
+      data-bs-target="#newGroupModal"
+    >
+      <i class="fa fa-plus"></i> New Group
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="alert alert-success py-2" *ngIf="alert.success">{{ alert.success }}</div>
+    <div class="alert alert-danger py-2" *ngIf="alert.failure">{{ alert.failure }}</div>
+    <div *ngIf="loader" class="text-center"><span class="loader"></span></div>
+    <p class="text-center" *ngIf="loader == false && API_GROUPS.length == 0">
+      You have no API Groups yet.
+      <a
+        class="btn-link cursor-pointer"
+        data-bs-toggle="modal"
+        data-bs-target="#newGroupModal"
+        >Create a group now</a
+      >
+    </p>
+    <div class="row" *ngIf="API_GROUPS.length > 0">
+      <div class="col-12">
+        <div class="row g-2 pb-2 mb-1 border-bottom small fw-semibold text-muted">
+          <div class="col-lg-8">Group</div>
+          <div class="col-lg-4 text-lg-end">Public catalog &amp; actions</div>
+        </div>
+        <div
+          class="row mb-4"
+          *ngFor="let group of API_GROUPS"
+          style="border-bottom: 1px solid #eeeeee"
+        >
+          <div class="col-lg-8">
+            <a
+              class="btn-link cursor-pointer"
+              (click)="getGroupMembers(group.id)"
+              data-bs-toggle="modal"
+              data-bs-target="#groupViewModal"
+              >{{ group.name }}</a
+            >
+            <div class="mt-1 mb-1">
+              <span *ngIf="isGroupCatalogPublic(group)" class="badge bg-success me-1"
+                >Public: ON — live on marketplace</span
+              >
+              <span *ngIf="!isGroupCatalogPublic(group)" class="badge bg-secondary text-white me-1"
+                >Public: OFF — not shared yet</span
+              >
+            </div>
+            <small class="text-muted d-block mt-1">{{
+              group.created_at | date : "medium"
+            }}</small>
+            <p>{{ group.description }}</p>
+          </div>
+          <div class="col-lg-4 text-lg-end">
+            <div class="d-flex flex-wrap gap-2 justify-content-lg-end justify-content-start align-items-center mt-2 mt-lg-0">
+              <button
+                type="button"
+                class="btn btn-primary btn-sm"
+                *ngIf="!isGroupCatalogPublic(group)"
+                (click)="publishGroup(group, $event)"
+              >
+                <i class="fa fa-globe me-1"></i> Publish public catalog
+              </button>
+              <a
+                class="btn btn-outline-success btn-sm"
+                *ngIf="isGroupCatalogPublic(group)"
+                [routerLink]="['/marketplace/endpoint/group']"
+                [queryParams]="{ id: group.id }"
+                target="_blank"
+                rel="noopener"
+              >
+                <i class="fa fa-external-link-alt me-1"></i> Open public page
+              </a>
+              <button
+                type="button"
+                class="btn btn-outline-secondary btn-sm"
+                *ngIf="isGroupCatalogPublic(group)"
+                (click)="copyPublicGroupLink(group.id, $event)"
+              >
+                <i class="fa fa-link me-1"></i> Copy link
+              </button>
+              <button
+                type="button"
+                class="btn btn-outline-warning btn-sm"
+                *ngIf="isGroupCatalogPublic(group)"
+                (click)="unpublishGroup(group, $event)"
+              >
+                <i class="fa fa-eye-slash me-1"></i> Unpublish
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                data-bs-toggle="modal"
+                data-bs-target="#addMemberModal"
+                (click)="getWorskpaceEndpoints(); resetAlert()"
+                title="Add Members"
+              >
+                <i class="fa fa-plus"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                (click)="setSelectedGroup(group.id); resetAlert()"
+                data-bs-toggle="modal"
+                data-bs-target="#newGroupModal"
+                title="Edit group"
+              >
+                <i class="fa fa-pen"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-light btn-sm"
+                (click)="deleteGroup(group.id)"
+                title="Delete group"
+              >
+                <i class="fa fa-times" *ngIf="!loader"></i>
+                <span
+                  *ngIf="loader == true"
+                  class="loader"
+                  style="margin-left: 20px"
+                ></span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: New/Update Group -->
+<div
+  class="modal fade"
+  id="newGroupModal"
+  tabindex="-1"
+  aria-labelledby="newGroupModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="newGroupModalLabel">
+          {{ selectedGroup.id ? "Update" : "New" }} API Group
+          <span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <!-- Alerts -->
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          {{ alert.success }}
+        </div>
+        <div class="mb-3">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Group name"
+            id="groupName"
+            [(ngModel)]="selectedGroup.name"
+          />
+        </div>
+        <div class="mb-3">
+          <textarea
+            class="form-control"
+            placeholder="Description"
+            id="groupDescription"
+            [(ngModel)]="selectedGroup.description"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+          Close
+        </button>
+        <button type="button" class="btn btn-primary" (click)="createGroup()">
+          {{ selectedGroup.id ? "Update" : "Create" }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Modal: New/Update Group -->
+
+<!-- Group View Modal. Displays the group name, description and group members -->
+<div
+  class="modal fade"
+  id="groupViewModal"
+  tabindex="-1"
+  aria-labelledby="groupViewModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="loader">
+      <div class="modal-body text-center"><div class="loader"></div></div>
+    </div>
+    <div class="modal-content" *ngIf="!loader">
+      <div class="modal-header">
+        <h5 class="modal-title" id="groupViewModalLabel">
+          <strong>Group: {{ selectedGroup.name }}</strong> <br />
+          <span *ngIf="isGroupCatalogPublic(selectedGroup)" class="badge bg-success mt-1">Public: ON</span>
+          <span *ngIf="!isGroupCatalogPublic(selectedGroup)" class="badge bg-secondary mt-1">Public: OFF</span>
+          <span
+            class="badge badge-light cursor-pointer ms-1"
+            routerLink="/connections/inbound"
+            data-bs-dismiss="modal"
+            >{{ selectedGroup.integrations_count }} integrations</span
+          >
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted">{{ selectedGroup.description }} <br /></p>
+        <div class="border rounded p-3 mb-3 bg-light">
+          <div class="fw-semibold small mb-2">Public marketplace documentation</div>
+          <p class="small text-muted mb-2">
+            <strong>Public</strong> here means the group appears on the marketplace catalog URL without login. Only
+            endpoints you have published individually are listed.
+          </p>
+          <button
+            type="button"
+            class="btn btn-primary btn-sm me-2"
+            *ngIf="!isGroupCatalogPublic(selectedGroup)"
+            (click)="publishGroup({ id: selectedGroup.id, name: selectedGroup.name }, $event)"
+          >
+            <i class="fa fa-globe me-1"></i> Publish public catalog
+          </button>
+          <a
+            class="btn btn-outline-success btn-sm me-2"
+            *ngIf="isGroupCatalogPublic(selectedGroup)"
+            [routerLink]="['/marketplace/endpoint/group']"
+            [queryParams]="{ id: selectedGroup.id }"
+            target="_blank"
+            rel="noopener"
+            >Open public page</a
+          >
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-sm me-2"
+            *ngIf="isGroupCatalogPublic(selectedGroup)"
+            (click)="copyPublicGroupLink(selectedGroup.id, $event)"
+          >
+            Copy link
+          </button>
+          <button
+            type="button"
+            class="btn btn-outline-warning btn-sm"
+            *ngIf="isGroupCatalogPublic(selectedGroup)"
+            (click)="unpublishGroup({ id: selectedGroup.id, name: selectedGroup.name }, $event)"
+          >
+            Unpublish
+          </button>
+        </div>
+        <div class="row">
+          <div class="col-sm-6">
+            <h6>
+              <strong
+                >Group Members ({{ selectedGroup.members.length }})</strong
+              >
+            </h6>
+          </div>
+          <div class="col-sm-6 text-end">
+            <a
+              class="btn btn-link"
+              data-bs-toggle="modal"
+              data-bs-target="#addMemberModal"
+              (click)="getWorskpaceEndpoints(); resetAlert()"
+              ><i class="fa fa-plus"></i> Add members</a
+            >
+          </div>
+        </div>
+        <hr *ngIf="selectedGroup.members.length > 0" />
+        <div>
+          <table class="table">
+            <tbody>
+              <tr *ngFor="let member of selectedGroup.members">
+                <td>
+                  <a
+                    [routerLink]="['/marketplace/endpoint']"
+                    [queryParams]="{
+                      id: member.id,
+                      title: member.summary,
+                      referer: 'endpoints/groups'
+                    }"
+                    data-bs-dismiss="modal"
+                    ><span class="badge badge-light">{{ member.method }}</span>
+                    {{ member.summary }}</a
+                  >
+                  <br />
+                  <small class="text-muted"
+                    >Added on {{ member.added_at | date : "medium" }}</small
+                  >
+                </td>
+                <td class="text-end">
+                  <button
+                    type="button"
+                    class="btn btn-light"
+                    (click)="removeMember(member.id, selectedGroup.id)"
+                  >
+                    <i class="fa fa-times"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- End Group View Modal -->
+
+<!-- Add members modal -->
+<div
+  class="modal fade"
+  id="addMemberModal"
+  tabindex="-1"
+  aria-labelledby="addMemberModalLabel"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" *ngIf="alert.success">
+      <div class="modal-body">
+        <div class="alert alert-success">
+          Congrats!
+          <a
+            (click)="getGroupMembers(selectedGroup.id)"
+            class="btn-link cursor-pointer"
+            data-bs-toggle="modal"
+            data-bs-target="#groupViewModal"
+            >New members have been added to the group.</a
+          >
+        </div>
+      </div>
+    </div>
+    <div class="modal-content" *ngIf="!alert.success">
+      <div class="modal-header">
+        <span
+          >{{ getSelectedEndpointsForAddingToGroup().length }} selected</span
+        >
+        <button
+          *ngIf="getSelectedEndpointsForAddingToGroup().length > 0"
+          class="btn btn-round btn-primary"
+          (click)="addGroupMembers()"
+        >
+          <span *ngIf="!loader">Add to group</span
+          ><span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </button>
+        <button
+          *ngIf="getSelectedEndpointsForAddingToGroup().length === 0"
+          class="btn btn-round btn-primary"
+          disabled="true"
+        >
+          Add to Group
+        </button>
+      </div>
+      <div class="modal-body" style="max-height: 500px; overflow: scroll">
+        <div class="col">
+          <input
+            type="text"
+            placeholder="Seach endpoints"
+            (keyup)="search($event.target)"
+            class="form-control"
+          />
+          <p class="mt-2" *ngIf="!loader && WORKSPACE_ENDPOINTS.length === 0">
+            No endpoints found
+          </p>
+        </div>
+        <table class="table">
+          <tbody>
+            <tr
+              *ngFor="let endpoint of WORKSPACE_ENDPOINTS"
+              style="border-top: 1px solid #eeeeee"
+            >
+              <td>
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  [(ngModel)]="endpoint.selected"
+                  [value]="endpoint.id"
+                  name=""
+                  id="{{ endpoint.id }}"
+                />
+              </td>
+              <td>
+                <label for="{{ endpoint.id }}">{{ endpoint.summary }}</label>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

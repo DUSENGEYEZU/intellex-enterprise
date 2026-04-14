@@ -1,0 +1,79 @@
+<div class="row pt-5">
+  <div class="col-md-6 mx-auto">
+    <h1>Empowering Data Exchange</h1>
+    <p>
+      Intellex provides a secure, interoperable platform for exchanging and
+      capitalizing on data. Discover seamless API integrations, robust security,
+      and data-sharing opportunities tailored for the modern enterprise.
+    </p>
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col"><h3>Login</h3></div>
+          <div class="col-auto">
+            <button routerLink="/marketplace" class="btn btn-link">
+              Marketplace <i class="fa fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="alert alert-danger alert-dismiss" *ngIf="alert">
+          {{ alert }}
+        </p>
+        <div class="row">
+          <div class="form-group">
+            <label for="email2">Username</label>
+            <input
+              type="text"
+              [(ngModel)]="USERNAME"
+              class="form-control"
+              id="email2"
+              placeholder="Username"
+              (keyup.enter)="login()"
+            />
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              [(ngModel)]="PASSWORD"
+              class="form-control"
+              id="password"
+              placeholder="Password"
+              (keyup.enter)="login()"
+            />
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6"></div>
+          <div
+            class="col-md-6 text-end cursor-pointer"
+            routerLink="/forgot-password"
+          >
+            Forgot password?
+          </div>
+        </div>
+      </div>
+      <div class="card-action">
+        <button
+          class="btn btn-secondary form-control"
+          id="loginButton"
+          (click)="login()"
+        >
+          <span *ngIf="!loader">Login</span>
+          <span
+            *ngIf="loader == true"
+            class="loader"
+            style="margin-left: 20px"
+          ></span>
+        </button>
+      </div>
+      <div class="row mb-5">
+        <div class="text-center">
+          Don't have an account? <a href="/register?package=BASIC">Sign Up</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,81 @@
+.sidebar[data-background-color="dark"] .nav > .nav-item a.active {
+  background-color: #4a3a85 !important;
+}
+.navbar .navbar-nav .nav-item .nav-link.active {
+  background-color: #270650;
+  color: white;
+}
+
+@media screen and (max-width: 991.5px) {
+  .alt-brand {
+    display: none !important;
+  }
+}
+
+/* Style for the alert banner */
+#network-alert-danger {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #f18e87; /* Red background */
+  color: black;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  display: none; /* Hidden by default */
+  z-index: 1010; /* Ensure it's on top */
+}
+
+#network-alert-success {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #e9cfff; /* Red background */
+  color: black;
+  text-align: center;
+  padding: 10px;
+  font-size: 12px;
+  display: none; /* Hidden by default */
+  z-index: 1010; /* Ensure it's on top */
+}
+
+/* Action Buttons */
+
+/* Mobile first: default visibility */
+.action-buttons-desktop {
+  display: none;
+}
+
+.action-buttons-mobile {
+  display: block;
+}
+
+/* Tablet and up (e.g., 768px or higher) */
+@media (min-width: 992px) {
+  .action-buttons-desktop {
+    display: block;
+  }
+
+  .action-buttons-mobile {
+    display: none;
+  }
+}
+
+/* Larger desktop (e.g., 1024px or higher) */
+@media (min-width: 1024px) {
+  .action-buttons-desktop {
+    display: block;
+  }
+
+  .action-buttons-mobile {
+    display: none;
+  }
+}
+
+.btn-secondary {
+  background-color: #270650 !important;
+  color: white;
+  border: 1px solid #270650 !important;
+}

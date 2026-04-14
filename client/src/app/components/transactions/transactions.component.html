@@ -1,0 +1,125 @@
+<div class="row d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div class="col-md-7">
+        <h3 class="fw-bold mb-3">Transactions <span *ngIf="loader == true" class="loader"
+                style="margin-left: 20px;"></span></h3>
+        <p class="op-7 mb-2">Keep track of revenues and usage costs. Revenues come from calls to your listed endpoints, and usage costs are deducted from your wallet when you consume external data or API.</p>
+    </div>
+    <div class="col-md-5">
+        <div class="input-group">
+            <span class="input-group-text">Time range</span>
+            <input [(ngModel)]="DATES.start" (change)="getTransactions()" type="date" class="form-control">
+            <input [(ngModel)]="DATES.end" (change)="getTransactions()" type="date" class="form-control">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-sm-6 col-md-6">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="icon-big text-center">
+                <i class="icon-wallet text-success"></i>
+              </div>
+            </div>
+            <div class="col-7 col-stats">
+              <div class="numbers">
+                <p class="card-category">Revenue</p>
+                <h4 class="card-title">{{STATS.TOTAL_REVENUE | currency:'RWF'}}</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-6">
+        <div class="card card-stats card-round">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-5">
+                <div class="icon-big text-center">
+                  <i class="icon-pie-chart text-warning"></i>
+                </div>
+              </div>
+              <div class="col-7 col-stats">
+                <div class="numbers">
+                  <p class="card-category">Usage</p>
+                  <h4 class="card-title">{{STATS.TOTAL_USAGE | currency:'RWF'}}</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+    <!-- <div class="col-sm-6 col-md-3">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="icon-big text-center">
+                <i class="icon-close text-danger"></i>
+              </div>
+            </div>
+            <div class="col-7 col-stats">
+              <div class="numbers">
+                <p class="card-category"></p>
+                <h4 class="card-title">23</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-6 col-md-3">
+      <div class="card card-stats card-round">
+        <div class="card-body">
+          <div class="row">
+            <div class="col-5">
+              <div class="icon-big text-center">
+                <i class="icon-social-twitter text-primary"></i>
+              </div>
+            </div>
+            <div class="col-7 col-stats">
+              <div class="numbers">
+                <p class="card-category">Followers</p>
+                <h4 class="card-title">+45K</h4>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> -->
+  </div>
+
+    <div id="basic-datatables_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+        <div class="row">
+            <div class="card">
+                <div class="card-body">
+                    <p *ngIf="!loader && TRANSACTIONS.length === 0" class="text-center">No recent transactions between {{DATES.start | date}} and {{DATES.end | date}}</p>
+                    <div class="table-responsive" *ngIf="TRANSACTIONS.length > 0">
+                        <table id="basic-datatables" class="display table table-hover dataTable"
+                        role="grid" aria-describedby="basic-datatables_info">
+                            <thead>
+                                <tr>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                    <th class="text-end">Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let transaction of TRANSACTIONS">
+                                    <td>{{transaction.amount | currency:'RWF'}}</td>
+                                    <td>
+                                        <span *ngIf="transaction.type === 'CREDIT'" class="badge badge-success">REVENUE</span>
+                                        <span *ngIf="transaction.type === 'DEBIT'" class="badge badge-warning">USAGE</span>
+                                    </td>
+                                    <td class="text-end">{{transaction.created_at | date:'medium'}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

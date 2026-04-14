@@ -1,0 +1,170 @@
+<div class="row mb-3">
+    <div class="col-md-2 d-flex align-items-center bg-white">
+        <div class="card card-post card-round w-100" style="margin-bottom: 0px;box-shadow: none;">
+          <img class="card-img-top" [src]="WORKSPACE.logo_url ? WORKSPACE.logo_url : '/assets/img/building-icon.png'" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+        </div>
+    </div>
+    <div class="col-md-8">
+        <h1>
+            {{WORKSPACE.name}} 
+            <button *ngIf="SESSION && utilsService.getMainWorkspace() === WORKSPACE_ID" (click)="resetAlert()" class="btn btn-icon btn-light btn-round" data-bs-toggle="modal" data-bs-target="#workspaceModal">
+                <i class="fa fa-pen"></i>
+            </button>
+        </h1>
+        <p>{{WORKSPACE.description}}</p>
+        <span class="badge badge-light me-4">{{this.utilsService.formatFilters(WORKSPACE.industry_id) | titlecase}}</span> <a [href]="WORKSPACE.website_url" target="_blank" *ngIf="WORKSPACE.website_url"><i class="fas fa-external-link-alt"></i> Visit website</a>
+        <p class="text-muted"><small>Joined on {{WORKSPACE.created_at | date}}</small></p>
+    </div>
+    <div class="col-md-2">
+        <button class="btn btn-light" title="Copy Link" (click)="utilsService.copyLinkToClipboard()"><i class="far fa-clone" style="font-size: large;"></i></button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-body">
+              <div class="row">
+                <div class="card-title fw-mediumbold col-md-10">APIs</div>
+                <div class="col-md-2"><a *ngIf="SESSION && utilsService.getMainWorkspace() === WORKSPACE_ID" routerLink="/endpoints">Manage</a></div>
+              </div>
+              <!-- if no api listed -->
+               <p class="text-center" *ngIf="!loader && ENDPOINTS.length === 0">There are no listed APIs at the moment.</p>
+              <div class="card-list">
+                <div class="item-list" *ngFor="let endpoint of ENDPOINTS">
+                  <div class="info-user ms-3">
+                    <div class="username"><span class="badge badge-light me-2">{{endpoint.method}} </span> 
+                        <a [routerLink]="['/marketplace/endpoint']" [queryParams]="{'id': endpoint.id, 'title': endpoint.summary, 'referer':'workspace'}">{{endpoint.summary}}</a>
+                    </div>
+                    <div class="status text-truncate" style="max-width:250px;">{{endpoint.description}}</div>
+                  </div>
+                  <button class="btn btn-icon btn-primary btn-round btn-xs" [routerLink]="['/marketplace/endpoint']" [queryParams]="{'id': endpoint.id, 'title': endpoint.summary, 'referer':'marketplace'}">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-round">
+            <div class="card-body">
+                <div class="row align-items-start">
+                    <div class="card-title fw-mediumbold col-md-8">
+                      API Groups
+                      <span class="d-block text-uppercase small text-muted fw-semibold mt-1" style="letter-spacing: 0.04em"
+                        >Public marketplace</span
+                      >
+                    </div>
+                    <div class="col-md-4 text-md-end" *ngIf="SESSION && utilsService.getMainWorkspace() === WORKSPACE_ID">
+                      <a class="btn btn-outline-primary btn-sm" routerLink="/endpoints/groups">Open API Groups page</a>
+                    </div>
+                  </div>
+              <p class="small text-muted mb-2" *ngIf="SESSION && utilsService.getMainWorkspace() === WORKSPACE_ID">
+                Publish catalog here or on <strong>Endpoints → API Groups</strong>. The marketplace link only works after you publish.
+              </p>
+              <div class="alert alert-success py-1 px-2 small mb-2" *ngIf="groupCatalogAlert.success">{{ groupCatalogAlert.success }}</div>
+              <div class="alert alert-danger py-1 px-2 small mb-2" *ngIf="groupCatalogAlert.failure">{{ groupCatalogAlert.failure }}</div>
+              <!-- if no groups listed -->
+              <p class="text-center" *ngIf="!loader && API_GROUPS.length == 0">There are no listed API groups at the moment</p>
+              <div class="card-list">
+                <div class="item-list flex-column align-items-stretch py-2" *ngFor="let group of API_GROUPS">
+                  <div class="info-user ms-3 me-2 flex-grow-1 w-100">
+                    <div class="username">
+                      <a [routerLink]="['/marketplace/endpoint/group']" [queryParams]="{ id: group.id }">{{ group.name }}</a>
+                      <span *ngIf="isGroupCatalogPublic(group)" class="badge bg-success ms-1 small">Public: ON</span>
+                      <span *ngIf="!isGroupCatalogPublic(group)" class="badge bg-secondary ms-1 small">Public: OFF</span>
+                    </div>
+                    <div class="status text-wrap">{{ group.description }}</div>
+                    <div
+                      class="mt-2 d-flex flex-wrap gap-1"
+                      *ngIf="SESSION && utilsService.getMainWorkspace() === WORKSPACE_ID"
+                    >
+                      <button
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        *ngIf="!isGroupCatalogPublic(group)"
+                        (click)="publishGroupCatalog(group, $event)"
+                      >
+                        Publish public catalog
+                      </button>
+                      <a
+                        class="btn btn-outline-success btn-sm"
+                        *ngIf="isGroupCatalogPublic(group)"
+                        [routerLink]="['/marketplace/endpoint/group']"
+                        [queryParams]="{ id: group.id }"
+                        target="_blank"
+                        rel="noopener"
+                        >Open catalog</a
+                      >
+                      <button
+                        type="button"
+                        class="btn btn-outline-secondary btn-sm"
+                        *ngIf="isGroupCatalogPublic(group)"
+                        (click)="copyGroupCatalogLink(group.id, $event)"
+                      >
+                        Copy link
+                      </button>
+                      <button
+                        type="button"
+                        class="btn btn-outline-warning btn-sm"
+                        *ngIf="isGroupCatalogPublic(group)"
+                        (click)="unpublishGroupCatalog(group, $event)"
+                      >
+                        Unpublish
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Update Workspace Modal -->
+<div class="modal fade bg-fade modal-lg" id="workspaceModal" tabindex="1" aria-labelledby="workspaceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="alert alert-danger" *ngIf="alert.failure">{{alert.failure}}</div>
+                <div class="alert alert-success" *ngIf="alert.success">{{alert.success}}</div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Company Name</label>
+                    <input [(ngModel)]="WORKSPACE.name" type="text" class="form-control" placeholder="Business name">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlInput1" class="form-label">Company Website</label>
+                    <input [(ngModel)]="WORKSPACE.website_url" type="text" class="form-control" placeholder="https://">
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlTextarea1" class="form-label">Description</label>
+                    <textarea [(ngModel)]="WORKSPACE.description" class="form-control"
+                        id="exampleFormControlTextarea1" rows="3" placeholder="Describe what your business is about."></textarea>
+                </div>
+                <div class="mb-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-9">
+                            <label for="exampleFormControlInput1" class="form-label">Logo URL</label>
+                            <input [(ngModel)]="WORKSPACE.logo_url" type="text" class="form-control" placeholder="https://">
+                        </div>
+                        <div class="col-md-2 d-flex align-items-center" style="padding: 5px;">
+                            <img class="card-img-top" [src]="WORKSPACE.logo_url" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="exampleFormControlselect" class="form-label">Industry</label>
+                    <select name="industry" [(ngModel)]="WORKSPACE.industry_id" class="form-select"
+                    aria-describedby="basic-addon3" id="exampleFormControlselect">
+                        <option value="" selected>Select an industry</option> <!-- Placeholder option -->
+                        <option *ngFor="let industry of INDUSTRIES" [value]="industry.id">{{industry.name}}</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer" style="border-top: 0px;">
+                <button type="button" id="submitButton" class="btn btn-primary" (click)="updateWorspace()"><span *ngIf="!loader">Save</span> <span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Update Workspace Modal -->

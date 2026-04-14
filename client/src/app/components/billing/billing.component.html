@@ -1,0 +1,127 @@
+<div class="row d-flex justify-content-center">
+  <!-- Billing -->
+  <div class="col-md-6">
+    <div class="pt-2 pb-4">
+      <h3 class="fw-bold mb-3">
+        Wallet
+        <span
+          *ngIf="loader == true"
+          class="loader"
+          style="margin-left: 20px"
+        ></span>
+      </h3>
+      <p class="op-7 mb-2">
+        This wallet contains funds from your API/data sales, and the funds you
+        top up for consuming external APIs/data.
+      </p>
+    </div>
+    <!-- Usage Balance -->
+    <div class="card card-round card-secondary bg-secondary-gradient">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <h1>{{ WALLET_BALANCE | currency : "RWF" }}</h1>
+          </div>
+          <div class="col-auto">
+            <button
+              class="btn btn-light btn-xs cursor-pointer"
+              data-bs-toggle="modal"
+              data-bs-target="#topUpModal"
+            >
+              <i class="fa fa-plus"></i> Top Up
+            </button>
+          </div>
+        </div>
+        <h5 class="op-8">Wallet Balance</h5>
+        <div class="pull-right mt-2" style="padding-bottom: 13px">
+          <span class="op-8">Available for usage and cash-out</span>
+        </div>
+      </div>
+    </div>
+    <!-- Billing Hitory -->
+    <div class="card card-round">
+      <div class="card-body">
+        <div class="row">
+          <div class="card-title fw-mediumbold">Recent Top Ups</div>
+        </div>
+        <div class="card-list">
+          <p
+            class="text-center"
+            *ngIf="!loader && RECENT_TOPUP_HISTORY.length === 0"
+          >
+            No recent activity.
+          </p>
+          <div class="item-list" *ngFor="let invoice of RECENT_TOPUP_HISTORY">
+            <div class="info-user ms-3">
+              <div class="username">
+                {{ invoice.amount | currency : "RWF" }}
+              </div>
+              <div class="status">
+                {{ invoice.created_at | date : "medium" }}
+              </div>
+            </div>
+            <span class="">
+              <span
+                class="badge badge-success"
+                *ngIf="invoice.payment_status === 'PAID'"
+                >{{ invoice.payment_status }}</span
+              >
+              <span
+                class="badge badge-light"
+                *ngIf="invoice.payment_status === 'NEW'"
+                >{{ invoice.payment_status }}</span
+              >
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Credit Top Up Modal -->
+<div
+  class="modal fade bg-fade"
+  id="topUpModal"
+  tabindex="1"
+  aria-labelledby="topUpModalLabel"
+  aria-hidden="true"
+>
+  <button data-bs-dismiss="modal" id="dissmissModal"></button>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body mt-4">
+        <div class="mb-3">
+          <label for="topup-amount">How much would you like to top up?</label>
+          <br />
+          <div class="row">
+            <div class="col-md-1 d-flex align-items-end">
+              <strong>RWF</strong>
+            </div>
+            <div class="col-md-11">
+              <input
+                type="number"
+                class="form-control"
+                name="topup-amount"
+                min="{{ MINIMUM_TOPUP_AMOUNT }}"
+                [(ngModel)]="TOPUP_AMOUNT"
+                style="
+                  border: 0px;
+                  font-weight: bold;
+                  font-size: 2rem;
+                  border-bottom: 1px solid #afafaf;
+                "
+              />
+            </div>
+          </div>
+        </div>
+        <!-- commenting the makePayment button makePayment() -->
+        <button class="btn btn-primary pull-right" (click)="makePayment()">
+          <span *ngIf="!loader">Proceed</span>
+          <span *ngIf="loader == true" class="loader"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Credit Top Up Modal -->
+</div>

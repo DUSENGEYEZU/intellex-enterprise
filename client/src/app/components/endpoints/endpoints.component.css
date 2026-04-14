@@ -1,0 +1,18 @@
+.form-label{
+    font-weight: 600;
+}
+
+.btn-secondary{
+    color: #ffffff;
+    background-color: #270650 !important;
+    border-color: #270650 !important;
+}
+
+.btn-outline-alt{
+    border-color: #270650;
+    color: #270650;
+  }
+  .btn-outline-alt:hover {
+    color: #ffffff;
+    background-color: #270650;
+}

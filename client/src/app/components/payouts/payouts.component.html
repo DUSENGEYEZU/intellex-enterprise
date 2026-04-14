@@ -1,0 +1,96 @@
+<div class="row d-flex justify-content-center">
+    <div class="col-md-7">
+        <div class="pt-2 pb-4">
+            <h3 class="fw-bold mb-3">Payouts <span *ngIf="loader == true" class="loader"
+                    style="margin-left: 20px;"></span></h3>
+            <p class="op-7 mb-2">Manage where your revenues will be deposited. Payouts will be initiated every last week of the month, for accounts that have collected RWF10,000 and above in monthly revenue.
+            </p>
+        </div>
+        <button class="btn btn-primary btn-lg mb-4" *ngIf="!loader && !PAYOUT_ACCOUNT.bank_name" data-bs-toggle="modal"
+        data-bs-target="#payoutModal"><i class="fas fa-plus"></i> Configure Bank Account</button>
+         
+        <!-- Bank Account Details -->
+         <div class="card card-round" id="bank-details-view" *ngIf="PAYOUT_ACCOUNT.bank_name">
+             <div class="card-body">
+                 <div class="row">
+                     <div class="card-title fw-mediumbold">
+                        <span>Payout Account</span>
+                         <button  data-bs-toggle="modal" data-bs-target="#payoutModal" class="btn btn-icon btn-primary btn-round pull-right">
+                             <i class="fa fa-pen"></i>
+                         </button>
+                     </div>
+                 </div>
+                 <div class="card-list text-sm">
+                     <p><span class="text-muted">Bank Name</span><br><span>{{PAYOUT_ACCOUNT.bank_name}}</span></p>
+                     <p><span class="text-muted">Account Number</span> <br>  <span>{{PAYOUT_ACCOUNT.bank_account_number}}</span></p>
+                     <p><span class="text-muted">Account Name</span> <br>  <span>{{PAYOUT_ACCOUNT.bank_account_name}}</span></p>
+                     <p><span class="text-muted">Swift Code</span> <br>  <span>{{PAYOUT_ACCOUNT.swift_code}}</span></p>
+                     <p><span class="text-muted">Country</span> <br>  <span>{{PAYOUT_ACCOUNT.country | titlecase}}</span></p>
+                 </div>
+             </div>
+         </div>
+
+          <!-- Recent Payouts-->
+          <div class="card card-round" *ngIf="RECENT_PAYOUTS.length > 0">
+            <div class="card-body">
+               <div class="row">
+                   <div class="card-title fw-mediumbold">Recent Payouts</div>
+               </div>
+               <div class="card-list">
+                   <div class="item-list" *ngFor="let payout of RECENT_PAYOUTS">
+                        <div class="info-user ms-3">
+                            <div class="username">{{payout.amount | currency:'RWF'}}</div>
+                            <div class="status">{{payout.created_at | date}}</div>
+                        </div>
+                        <span class="text-sm text-muted text-end">
+                            {{payout.bank_account_number}}<br>
+                            <small>{{payout.bank_account_name}}</small>
+                        </span>
+                   </div>
+               </div>
+            </div>
+        </div>
+     </div>
+</div>
+
+<!-- Payout Edit Modal -->
+<div class="modal fade bg-fade" id="payoutModal" tabindex="1" aria-labelledby="payoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="payoutModalLabel">Configure Payout Account</h1>
+                <button type="button" class="btn-close modal-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="form">
+                    <div class="mb-3">
+                        <label for="">Bank Name *</label>
+                        <input type="text" class="form-control" [(ngModel)]="PAYOUT_ACCOUNT.bank_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Account Number *</label>
+                        <input type="text" class="form-control" [(ngModel)]="PAYOUT_ACCOUNT.bank_account_number">
+                    </div>
+                    <div class="mb-3">
+                        <label for="">Account Name *</label>
+                        <input type="text" class="form-control" [(ngModel)]="PAYOUT_ACCOUNT.bank_account_name">
+                    </div>
+                    <div class="mb-3">
+                       <label for="">Country</label>
+                       <select name="" id="" class="form-control" [(ngModel)]="PAYOUT_ACCOUNT.country">
+                           <option value="rwanda">Rwanda</option>
+                       </select>
+                   </div>
+                   <div class="mb-3">
+                       <label for="">SWIFT CODE</label>
+                       <input type="text" class="form-control" [(ngModel)]="PAYOUT_ACCOUNT.swift_code">
+                   </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                    <button (click)="createOrUpdatePayoutAccount()" class="btn btn-primary"><span *ngIf="!loader">Save</span><span *ngIf="loader == true" class="loader"></span></button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Payout Edit Modal -->

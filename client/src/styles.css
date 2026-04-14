@@ -1,0 +1,143 @@
+/* You can add global styles to this file, and also import other style files */
+/* Intellex Color Palette  */
+
+/* Light theme (default) */
+:root {
+  --primary-color: #3e0b75;
+  --secondary-color: #7e57c2;
+  --accent-color: #ff6bcb;
+  --text-color: #1f1f1f;
+  --background-color: #f3f4fa;
+  --primary-color-hover: rgba(62, 11, 117, 0.85);
+  --background-color-secondary: #eef0f6;
+  --text-color-on-dark-bg: #f1f1f1;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary-color: #b497ff;
+  --secondary-color: #a58ee0;
+  --accent-color: #ff85d0;
+  --text-color: #f1f1f1;
+  --background-color: #141017;
+  --primary-color-hover: rgba(180, 151, 255, 0.85);
+}
+
+.btn-primary {
+  background-color: var(--primary-color) !important;
+  border-color: var(--primary-color-hover) !important;
+}
+
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:active:focus {
+  background-color: var(--primary-color-hover) !important;
+  border-color: var(--primary-color-hover) !important;
+  box-shadow: none;
+}
+
+.btn-accent {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: #fff !important;
+}
+
+.modal-header {
+  background-color: var(--primary-color) !important;
+  color: var(--modal-header-text-color) !important;
+  border-bottom: none;
+}
+
+.modal-header,
+.modal-title > h1 {
+  color: var(--text-color-on-dark-bg) !important;
+}
+
+.btn-close {
+  filter: invert(1) brightness(1);
+}
+
+.btn-outline-alt {
+  border: 1px solid #270650 !important;
+  color: #270650 !important;
+}
+
+.btn-outline-alt:hover {
+  color: #ffffff !important;
+  background: #4a3a85 !important;
+}
+
+.loader {
+  display: inline-block;
+  border: 4px solid #f3f3f3; /* Light grey */
+  border-top: 4px solid #3498db; /* Blue */
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  /* animation: spin 2s linear infinite; */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+.text-underline {
+  text-decoration: underline;
+}
+
+.bg-fade {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.badge-light {
+  background: #eef0f6;
+  color: black;
+  border: 0px;
+  font-size: small;
+}
+
+.text-color {
+  color: var(--text);
+}
+
+.text-code {
+  margin-left: 8px;
+  background: #eef0f6 !important;
+  font-family: ui-monospace, SFMono-Regular, SF Mono, Menlo, Consolas,
+    Liberation Mono, monospace;
+  font-size: small;
+  border-radius: 6px;
+  white-space: nowrap;
+  overflow-x: scroll;
+  padding-top: 21px;
+  padding-bottom: 21px;
+  padding-left: 19px;
+  padding-right: 19px;
+}
+.nav-tabs .nav-link.active {
+  background: #1a1f35;
+  color: white;
+}
+.nav-tabs .nav-link {
+  color: gray;
+  font-weight: bold;
+}
+
+@media screen and (max-width: 991.5px) {
+  .profile-pic span {
+    display: block;
+  }
+}
