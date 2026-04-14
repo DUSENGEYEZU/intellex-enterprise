@@ -1,0 +1,398 @@
+<div class="row">
+  <div class="col-md-10 mx-auto">
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" style="border-radius: 40px; margin-bottom: 0px">
+          <div class="card-body">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text" style="background: inherit; border: 0px; margin-top: 7px">
+                  <i class="fas fa-search text-muted" style="font-size: large"></i>
+                </div>
+              </div>
+              <input id="search" type="text" class="form-control" placeholder="Search APIs here..."
+                (keyup)="search($event.target)" style="border: 0px" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card" style="background: none; box-shadow: 0px 0px; margin-bottom: 5px">
+          <div class="card-body">
+            <div class="row">
+              <div class="col">
+                <button class="btn fs-5 btn-filter" (click)="resetFilters(); showGridView(); getOpenEndpoints()">
+                  <i class="fa fa-bolt"></i> Open
+                </button>
+              </div>
+              <div class="col">
+                <button class="btn fs-5 btn-filter" (click)="resetFilters(); showGridView(); getPublicEndpoints()">
+                  <i class="fa fa-globe"></i> All
+                </button>
+              </div>
+              <div class="col">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn dropdown-toggle fs-5 btn-filter" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fa fa-building"></i> Industry
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li *ngFor="let industry of TARGET.industries">
+                      <a (click)="
+                          TARGET.selected.industry = industry.industry; showGridView();
+                          getPublicEndpoints()
+                        " class="dropdown-item cursor-pointer">{{
+                        this.utilsService.formatFilters(industry.industry)
+                        | titlecase
+                        }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn dropdown-toggle fs-5 btn-filter" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fa fa-map-pin"></i> Country
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li *ngFor="let country of TARGET.countries">
+                      <a class="dropdown-item cursor-pointer" (click)="
+                          TARGET.selected.country = country.country; showGridView();
+                          getPublicEndpoints(true)
+                        ">{{
+                        this.utilsService.formatFilters(country.country)
+                        | titlecase
+                        }}</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="col">
+                <button class="btn ms-1 fs-5 btn-filter" (click)="showGridView()">
+                  <i class="fa fa-th"></i> Grid
+                </button>
+              </div>
+              <div class="col">
+                <button class="btn fs-5 btn-filter" (click)="showMapView()">
+                  <i class="fa fa-map"></i> Map
+                </button>
+              </div>
+            </div>
+            <!-- Displays the selected filters -->
+            <div class="row mt-3" *ngIf="
+                TARGET.selected.industry ||
+                TARGET.selected.region ||
+                TARGET.selected.country
+              ">
+              <div class="col-md-12">
+                <span class="badge badge-warning me-2" *ngIf="TARGET.selected.industry">{{ TARGET.selected.industry |
+                  titlecase }}
+                  <i class="fa fa-times cursor-pointer" (click)="
+                      TARGET.selected.industry = ''; getPublicEndpoints()
+                    "></i></span>
+                <span class="badge badge-warning me-2" *ngIf="TARGET.selected.region">{{ TARGET.selected.region |
+                  titlecase }}
+                  <i class="fa fa-times cursor-pointer"
+                    (click)="TARGET.selected.region = ''; getPublicEndpoints()"></i></span>
+                <span class="badge badge-warning me-2" *ngIf="TARGET.selected.country">{{ TARGET.selected.country |
+                  titlecase }}
+                  <i class="fa fa-times cursor-pointer"
+                    (click)="TARGET.selected.country = ''; getPublicEndpoints()"></i></span>
+                <span class="badge badge-warning me-2" *ngIf="TARGET.selected.service.id">{{
+                  TARGET.selected.service.name }}
+                  <i class="fa fa-times cursor-pointer" (click)="
+                      TARGET.selected.service.id = ''; getPublicEndpoints()
+                    "></i></span>
+                <span class="badge badge-warning me-2" *ngIf="TARGET.selected.workspace.id">{{
+                  TARGET.selected.workspace.name }}
+                  <i class="fa fa-times cursor-pointer" (click)="
+                      TARGET.selected.workspace.id = ''; getPublicEndpoints()
+                    "></i></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <section id="grid-view">
+      <div class="row">
+        <div class="col-md-12">
+          <p class="text-center" *ngIf="loader === false && ENDPOINTS.length === 0">
+            There are no listed endpoint. for the selected market!
+            <span class="link link-primary cursor-pointer"
+              (click)="this.resetSelectedMarket(); getPublicEndpoints()">Show me all endpoints.</span>
+          </p>
+        </div>
+      </div>
+      <!-- Start PRODUCT LOADER SKELLETON -->
+      <div class="row product-loader-skeleton" *ngIf="loader === true">
+        <!-- Skeleton Item -->
+        <div class="col-md-6">
+          <div class="card text-center card-product card-skeleton">
+            <div class="card-product__img">
+              <img class="card-img card-img-skeleton" />
+            </div>
+            <div class="card-body">
+              <p class="category-skeleton"></p>
+              <h4 class="card-product__title product-name-skeleton"></h4>
+              <p class="card-product__price product-price-skeleton"></p>
+            </div>
+          </div>
+        </div>
+        <!-- Skeleton Item -->
+        <div class="col-md-6">
+          <div class="card text-center card-product card-skeleton">
+            <div class="card-product__img">
+              <img class="card-img card-img-skeleton" />
+            </div>
+            <div class="card-body">
+              <p class="category-skeleton"></p>
+              <h4 class="card-product__title product-name-skeleton"></h4>
+              <p class="card-product__price product-price-skeleton"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- End PRODUCT LOADER SKELLETON -->
+      <div class="row">
+        <div class="col-md-4" *ngFor="let endpoint of ENDPOINTS">
+          <div class="card">
+            <div class="card-body">
+              <pre style="
+                  background: #eef0f6;
+                  height: 150px;
+                  border-radius: 5px;
+                  font-size: smaller;
+                  padding: 10px;
+                ">{{
+                  utilsService.parseJSON(endpoint.sample_response_object) | json
+                }}</pre>
+              <div class="row">
+                <div class="col">
+                  <small *ngIf="endpoint.target_country" class="text-muted me-3 cursor-pointer"
+                    (click)="TARGET.selected.country=endpoint.target_country;getPublicEndpoints()"><i
+                      class="fas fa-map-pin text-secondary"></i>
+                    {{this.utilsService.formatFilters(endpoint.target_country) | titlecase}}</small>
+                  <!-- <small *ngIf="endpoint.target_region" class="text-muted me-3 cursor-pointer" (click)="TARGET.selected.region=endpoint.target_region;getPublicEndpoints()"><i class="fa fa-globe text-secondary"></i> {{this.utilsService.formatFilters(endpoint.target_region) | titlecase}}</small> -->
+                  <small *ngIf="endpoint.target_industry" class="text-muted me-3 cursor-pointer" (click)="
+                      TARGET.selected.industry = endpoint.target_industry;
+                      getPublicEndpoints()
+                    "><i class="fa fa-building text-secondary"></i>
+                    {{
+                    this.utilsService.formatFilters(endpoint.target_industry)
+                    | titlecase
+                    }}</small>
+                </div>
+                <div class="col-auto text-secondary">
+                  <span class="badge badge-count" *ngIf="!endpoint.is_open">{{ endpoint.call_fee | currency : "RWF" }}
+                    /call</span>
+                  <span class="badge badge-count" *ngIf="endpoint.is_open">OPEN</span>
+                </div>
+              </div>
+            </div>
+            <div class="card-footer">
+              <span style="
+                  display: -webkit-box;
+                  -webkit-line-clamp: 2;
+                  line-clamp: 2;
+                  -webkit-box-orient: vertical;
+                  overflow: hidden;
+                  text-overflow: ellipsis;
+                  line-height: normal;
+                " title="{{ endpoint.summary }}"><span class="badge badge-light" style="font-size: smaller">{{
+                  endpoint.method
+                  }}</span>
+                <a [routerLink]="['endpoint']" [queryParams]="{
+                    id: endpoint.id,
+                    title: endpoint.summary,
+                    referer: 'marketplace'
+                  }">
+                  {{ endpoint.summary }}</a></span>
+              <i *ngIf="endpoint.is_open === false" class="fas fa-shield-alt" title="Restricted Access"></i><i
+                *ngIf="endpoint.is_open === true" class="fa fa-bolt" title="Open API"></i>
+              <a routerLink="/workspace/{{ endpoint.workspace_id }}" class="text-muted cursor-pointer link-primary"
+                style="float: right" title="Publisher">
+                {{ endpoint.workspace_name }}</a>
+              <br />
+              <div class="row">
+                <div class="col-md-6 mb-2" *ngIf="endpoint.is_open === false">
+                  <button (click)="
+                      setRequestedEndpoint(
+                        endpoint.id,
+                        endpoint.service_id,
+                        endpoint.workspace_id,
+                        endpoint.url,
+                        endpoint.method,
+                        endpoint.sample_request_object,
+                        endpoint.sample_response_object,
+                        endpoint.workspace_name,
+                        endpoint.service_name,
+                        endpoint.industry_id,
+                        endpoint.description,
+                        endpoint.industry_id
+                      )
+                    " class="btn btn-secondary btn-round" style="width: 100%; font-size: smaller; padding: 5px"
+                    data-bs-toggle="modal" data-bs-target="#connectionModal">
+                    <i class="fas fa-link"></i> Connect
+                  </button>
+                </div>
+                <div [class]="endpoint.is_open == true ? 'col-md-12' : 'col-md-6'">
+                  <button class="btn btn-outline-alt btn-round" style="width: 100%; font-size: smaller; padding: 5px"
+                    [routerLink]="['endpoint']" [queryParams]="{
+                      id: endpoint.id,
+                      title: endpoint.summary,
+                      referer: 'marketplace'
+                    }">
+                    <i class="fas fa-info-circle"></i> Details
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="map-view">
+      <!-- Map holder div -->
+      <div id="map"></div>
+    </section>
+  </div>
+</div>
+
+<!-- Connection Modal -->
+<div class="modal modal-lg fade bg-fade" id="connectionModal" tabindex="1" aria-labelledby="connectionModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom: 0px">
+        <h1 class="modal-title fs-5" id="connectionModalLabel">
+          Access Request
+          <span *ngIf="loader == true" class="loader" style="margin-left: 20px"></span>
+        </h1>
+        <br />
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" *ngIf="!loader">
+        <div class="alert alert-secondary" *ngIf="SESSION && STATS.is_workspace_connected">
+          You already have access to this endpoint.
+          <a data-bs-dismiss="modal" [routerLink]="['endpoint']" [queryParams]="{
+              id: REQUESTED_ENDPOINT.id,
+              title: REQUESTED_ENDPOINT.summary
+            }">Checkout the details</a>
+        </div>
+
+        <div class="alert alert-info" *ngIf="!SESSION">
+          You must <a data-bs-dismiss="modal" routerLink="/login">Login</a> to
+          continue. No account yet?
+          <a href="https://intellex.mininfra.gov.rw/register?package=BASIC">Sign Up Now</a>
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          Your access request has been successfully submitted to the API
+          publisher. Head over to
+          <a routerLink="/connections/outbound" class="link" data-bs-dismiss="modal">Integrations > Outbound</a>
+          to track progress. We will also send you an email once your request
+          has been approved.
+        </div>
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="row" *ngIf="SESSION && !STATS.is_workspace_connected">
+          <div class="col-12">
+            <textarea [(ngModel)]="this.REQUESTED_ENDPOINT.purpose"
+              placeholder="What purpose will you use this API for? You can add your contact details if you wish to be contacted by the publisher and increase chances of getting access."
+              class="form-control"></textarea>
+          </div>
+          <div class="col-12 mt-4">
+            <p>
+              By submitting this request, you confirm that you have read,
+              understood, and accepted the terms of
+              <a class="btn-link cursor-pointer" (click)="$('#data-sharing-agreements').toggle('fast')">Data Sharing
+                Agreement</a>. Please
+              <a class="btn-link cursor-pointer" (click)="$('#data-sharing-agreements').toggle('fast')">click here to
+                read the terms</a>.
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12" style="display: none" id="data-sharing-agreements">
+            <h5>Data Sharing Agreement</h5>
+            <p class="text-muted">
+              <em>By requesting API access, you agree to the terms and conditions
+                outlined below for the use, sharing, and protection of data
+                accessed via our platform. Please review these terms
+                carefully:</em>
+            </p>
+            <ol>
+              <li class="mb-3">
+                <strong>Data Usage:</strong> The data provided through the API
+                is to be used in a manner consistent with the
+                <a class="link link-primary cursor-pointer" data-bs-toggle="modal"
+                  data-bs-target="#termsModal">platform's terms and conditions</a>. You agree to use the data
+                responsibly, respecting the rights
+                and confidentiality of all parties involved, and to avoid any
+                misuse, unauthorized redistribution, or actions that could harm
+                the integrity or purpose of the data. Failure to adhere to
+                responsible use may result in the suspension of access rights.
+              </li>
+              <li class="mb-3">
+                <strong>Confidentiality and Privacy:</strong> You agree to treat
+                any sensitive or confidential data accessed through this
+                platform in compliance with applicable data privacy laws.
+                Personal data should not be shared with unauthorized parties or
+                used in a manner that infringes on the privacy of individuals.
+              </li>
+              <li class="mb-3">
+                <strong>Data Security:</strong> You are responsible for
+                implementing robust security measures to protect the data
+                accessed. This includes but is not limited to secure storage,
+                data encryption, and restricted access to ensure the data
+                remains protected from unauthorized access or breaches.
+              </li>
+              <li class="mb-3">
+                <strong>Data Integrity:</strong> You agree to take appropriate
+                measures to maintain the integrity and accuracy of the data
+                provided through the API. Misuse, alteration, or
+                misrepresentation of the data is prohibited.
+              </li>
+              <li class="mb-3">
+                <strong>Compliance and Auditing:</strong> You agree to comply
+                with any auditing requests made by the data provider to ensure
+                adherence to these terms. Non-compliance may result in
+                suspension or termination of access privileges.
+              </li>
+              <li class="mb-3">
+                <strong>Intellectual Property:</strong> The data and API
+                services accessed are the intellectual property of the data
+                provider or the platform. Redistribution, republishing, or
+                sublicensing of the data is strictly prohibited unless
+                explicitly permitted.
+              </li>
+              <li class="mb-3">
+                <strong>Termination of Access:</strong> Access may be revoked at
+                any time, with or without notice, if there is evidence of a
+                violation of these terms or misuse of the data provided.
+              </li>
+              <li class="mb-3">
+                <strong>Indemnification:</strong> You agree to indemnify and
+                hold harmless the platform from any claims, damages, or
+                liabilities resulting from misuse or unauthorized access to the
+                data.
+              </li>
+            </ol>
+          </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="modal-footer" *ngIf="SESSION && !STATS.is_workspace_connected">
+          <button type="button" id="submitButton" class="btn btn-secondary btn-round" (click)="requestConnection()">
+            Connect
+            <span *ngIf="loader" class="loader" style="margin-left: 20px"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Connection Modal -->

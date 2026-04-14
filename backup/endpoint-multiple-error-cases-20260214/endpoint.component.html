@@ -1,0 +1,484 @@
+<div class="row product-loader-skeleton" *ngIf="loader">
+  <!-- Start PRODUCT LOADER SKELLETON -->
+  <!-- Skeleton Item -->
+  <div class="col-md-4">
+    <div class="card text-center card-product card-skeleton">
+      <div class="card-product__img">
+        <img class="card-img card-img-skeleton" />
+      </div>
+      <div class="card-body">
+        <p class="category-skeleton"></p>
+        <h4 class="card-product__title product-name-skeleton"></h4>
+        <p class="card-product__price product-price-skeleton"></p>
+      </div>
+    </div>
+  </div>
+  <!-- Skeleton Item -->
+  <div class="col-md-8">
+    <div class="card text-center card-product card-skeleton">
+      <div class="card-product__img">
+        <img class="card-img card-img-skeleton" />
+      </div>
+      <div class="card-body">
+        <p class="category-skeleton"></p>
+        <h4 class="card-product__title product-name-skeleton"></h4>
+        <p class="card-product__price product-price-skeleton"></p>
+      </div>
+    </div>
+  </div>
+  <!-- End PRODUCT LOADER SKELLETON -->
+</div>
+<div class="row" *ngIf="loader === false">
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <div class="row user-stats text-center">
+          <div class="col">
+            <div class="number">{{ STATS.connections_count }}</div>
+            <div class="title">Connections</div>
+          </div>
+          <div class="col">
+            <div class="number">{{ STATS.traffic_count }}</div>
+            <div class="title">Calls</div>
+          </div>
+          <div class="col cursor-pointer" (click)="copyLinkToClipboard()">
+            <div class="number"><i class="far fa-clone"></i></div>
+            <div class="title">Copy Link</div>
+          </div>
+        </div>
+      </div>
+      <!-- TODO - Handle OPEN API -->
+      <div class="card-body">
+        <div class="row mb-2 pb-2">
+          <div class="col-lg-6">
+            <span *ngIf="!endpoint.is_open">
+              <span style="font-size: 2rem">{{
+                endpoint.call_fee | currency : "RWF"
+                }}</span><br />
+              Per call
+            </span>
+            <span style="font-size: 1rem" *ngIf="endpoint.is_open"><i class="fas fa-bolt"></i> This API is open.</span>
+          </div>
+          <div class="col-lg-6" *ngIf="endpoint.is_open == false">
+            <div class="col-12">
+              <button *ngIf="STATS.is_workspace_connected === false" (click)="
+                  setRequestedEndpoint(
+                    endpoint.id,
+                    endpoint.service_id,
+                    endpoint.workspace_id,
+                    endpoint.url,
+                    endpoint.method,
+                    endpoint.sample_request_object,
+                    endpoint.sample_response_object,
+                    endpoint.workspace_name,
+                    endpoint.service_name,
+                    endpoint.industry_id,
+                    endpoint.description,
+                    endpoint.industry_id
+                  )
+                " class="btn btn-secondary btn-round mb-4" style="width: 100%" data-bs-toggle="modal"
+                data-bs-target="#connectionModal">
+                <i class="fa fa-plus"></i> Connect
+                <!-- <span class="badge badge-light" style="float: right;">{{endpoint.call_fee === 0 ? 'FREE' : '$ '+endpoint.call_fee | number}} /call</span> -->
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row pt-3" *ngIf="!endpoint.is_open" style="border-top: 1px solid #eef0f6">
+          <div class="col-12">
+            <div class="mb-4" *ngIf="STATS.is_workspace_connected === false">
+              <span>You are not connected to this API. </span> <br />
+            </div>
+            <div class="mb-4" *ngIf="STATS.workspace_connection_status === 'DENIED'">
+              <span class="text-warning">Your recent connection request has been denied by the API
+                publisher! Want to give it another try?</span>
+              <br />
+            </div>
+            <div *ngIf="STATS.workspace_connection_status === 'GRANTED'">
+              <div class="mb-3">You already have access to this API</div>
+              <strong>api-key: </strong><span class="text-secondary" style="
+                  margin-left: 0px;
+                  padding-top: 10px;
+                  padding-bottom: 10px;
+                ">{{ STATS.connection_api_key }}</span>
+              <div class="mt-4">
+                <i class="fa fa-warn"></i> The
+                <span class="badge badge-black">api-key</span> must be placed in
+                the headers for call authentication.
+              </div>
+            </div>
+            <div class="mb-4" *ngIf="STATS.workspace_connection_status === 'NEW'">
+              <span>Your recently submited access request to this API. Please wait
+                until you hear from the API publisher. In the meantime, feel
+                free to explore other
+                <a routerLink="/marketplace">interesting APIs</a>.
+              </span>
+              <br />
+            </div>
+          </div>
+          <div class="col-12" *ngIf="endpoint.is_open === true">
+            This is an Open API. Go ahead and start calling the endpoint.
+          </div>
+        </div>
+      </div>
+      <div class="card-footer pt-3 pb-3" style="line-height: normal" *ngIf="API_GROUPS.length > 0">
+        <!-- API Groups -->
+        <span><i class="fas fa-layer-group"></i> Part of
+          {{ API_GROUPS.length }} API Groups</span>
+        <br /><br />
+        <ul>
+          <li *ngFor="let group of API_GROUPS">
+            <a class="btn-link" [routerLink]="['group']" [queryParams]="{
+                id: group.group_id,
+                name: group.group_name,
+                desc: group.group_description,
+                ws: group.workspace_id
+              }">{{ group.group_name }}</a>
+          </li>
+        </ul>
+        <small class="text-muted">It is recommended to connect (or request access) to an API Group to
+          avoid managing individual api keys in case you need access to more
+          than one endpoint who happens to be part of a group.</small>
+      </div>
+      <div class="card-footer">
+        <p>
+          <small class="text-muted" title="Service name"><i class="fa fa-cube"></i> Product:
+            <strong>{{ endpoint.service_name }}</strong></small>
+        </p>
+        <p>
+          <small>
+            Published by
+            <a routerLink="/workspace/{{ endpoint.workspace_id }}" class="link-primary cursor-pointer">{{
+              endpoint.workspace_name }}</a>
+            <br />
+            <span class="text-muted">
+              <span><strong><i class="fa fa-building"></i> Industry: </strong>
+                {{
+                this.utilsService.formatFilters(endpoint.target_industry)
+                | titlecase
+                }}
+                <span *ngIf="!endpoint.target_industry">
+                  Not specified</span></span>
+              <br />
+              <span><strong><i class="fa fa-globe"></i> Region: </strong>
+                {{
+                this.utilsService.formatFilters(endpoint.target_region)
+                | titlecase
+                }}
+                <span *ngIf="!endpoint.target_industry">
+                  Not specified</span></span>
+              <br />
+              <span><strong><i class="fa fa-map-pin"></i> Country: </strong>
+                {{
+                this.utilsService.formatFilters(endpoint.target_country)
+                | titlecase
+                }}
+                <span *ngIf="!endpoint.target_industry">
+                  Not specified</span></span>
+            </span>
+          </small>
+        </p>
+        <p>
+          <small class="text-muted">Added on {{ endpoint.created_at | date }}</small>
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-lg-9">
+            <h3 class="fw-bold">{{ endpoint.summary }}</h3>
+            <small *ngIf="!endpoint.is_open" class="text-info">Requires <span class="code-snippet">api-key</span>
+              header. Don't have a key? <span class="btn-link cursor-pointer" data-bs-toggle="modal"
+                data-bs-target="#connectionModal">Request one</span> now.</small>
+          </div>
+          <div class="col-lg-3 d-flex justify-content-end">
+            <button class="btn btn-primary" style="min-width: 120px; height: 45px" data-bs-toggle="modal"
+              data-bs-target="#apiTestBench">
+              <i class="fa fa-solid fa-play"></i>&nbsp; Try it out
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-12">
+            <section class="mb-4">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="fw-semibold mb-0">Description</h5>
+              </div>
+
+              <p class="">{{ endpoint.description }}</p>
+            </section>
+            <section>
+              <h5 class="fw-semibold mb-0">URL</h5>
+              <p class="text-code d-flex justify-content-between justify-content-center align-items-center"
+                style="cursor: pointer">
+                <span>
+                  <span *ngIf="endpoint.method === 'GET'" class="badge badge-secondary">{{ endpoint.method }}</span>
+                  <span *ngIf="endpoint.method === 'POST'" class="badge badge-primary">{{ endpoint.method }}</span>
+                  <span *ngIf="endpoint.method === 'PUT'" class="badge badge-info">{{ endpoint.method }}</span>
+                  <span *ngIf="endpoint.method === 'PATCH'" class="badge badge-success">{{ endpoint.method }}</span>
+                  <span *ngIf="endpoint.method === 'DELETE'" class="badge badge-danger">{{ endpoint.method }}</span>
+                  <span *ngIf="endpoint.method === 'OPTION'" class="badge badge-warning">{{ endpoint.method }}</span>
+
+                  <span class="ms-2" id="code-snippet-{{ endpoint.id }}">{{
+                    endpoint.url
+                    }}</span>
+                </span>
+                <span>
+                  <button class="btn btn-primary" (click)="copyToClipboard(endpoint.id)">
+                    <i class="fa fa-solid fa-copy"></i>
+                  </button>
+                </span>
+              </p>
+            </section>
+
+            <div class="row">
+              <section class="mt-4 col-md-12">
+                <h5 style="font-weight: 600">Query Parameters</h5>
+                <ul>
+                  <li *ngIf="params.length === 0" class="text-muted">
+                    No query parameters
+                  </li>
+                  <li *ngFor="let param of params">
+                    <span class="badge badge-light">{{ param.key }}</span> :
+                    {{ param.value }}
+                  </li>
+                </ul>
+              </section>
+
+              <section class="mt-4 col-md-12">
+                <h5 style="font-weight: 600">Headers</h5>
+                <ul>
+                  <li *ngIf="headers.length === 0" class="text-muted">
+                    No headers
+                  </li>
+                  <li *ngFor="let header of headers">
+                    <span class="badge badge-light">{{ header.key }}</span> :
+                    {{ header.value }}
+                  </li>
+                </ul>
+              </section>
+            </div>
+
+            <section class="mt-4" *ngIf="endpoint.method !== 'GET' && endpoint.method !== 'DELETE'">
+              <h5 style="font-weight: 600">
+                Sample Request
+                <span *ngIf="multipart.length > 0" class="badge badge-secondary">Form-Data</span>
+                <span *ngIf="multipart.length === 0" class="badge badge-secondary">JSON</span>
+              </h5>
+              <!-- JSON SAMPLE REQUEST -->
+              <pre *ngIf="multipart.length === 0" style="
+                  background: #eef0f6;
+                  max-height: 250px;
+                  border-radius: 5px;
+                  font-size: small;
+                  padding: 10px;
+                ">{{
+                  utilsService.parseJSON(endpoint.sample_request_object) | json
+                }}</pre>
+
+              <!-- FORM-DATA SAMPLE REQUEST -->
+              <div *ngIf="multipart.length > 0">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Key</th>
+                      <th>Value</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngIf="multipart.length === 0">
+                      <td colspan="2" class="text-muted text-center">
+                        No form-data
+                      </td>
+                    </tr>
+                    <tr *ngFor="let param of multipart">
+                      <td>{{ param.key }}</td>
+                      <td>{{ param.value }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section class="mt-4">
+              <h5 style="font-weight: 600">Sample Response</h5>
+              <pre style="
+                  background: #eef0f6;
+                  max-height: 916px;
+                  border-radius: 5px;
+                  font-size: small;
+                  padding: 10px;
+                ">{{
+                  utilsService.parseJSON(endpoint.sample_response_object) | json
+                }}</pre>
+            </section>
+
+            <section class="mt-4">
+              <h5 style="font-weight: 600">Sample Error</h5>
+              <pre style="
+                  background: #f6eeee;
+                  max-height: 916px;
+                  border-radius: 5px;
+                  font-size: small;
+                  padding: 10px;
+                ">{{
+                  utilsService.parseJSON(endpoint.sample_error_object) | json
+                }}</pre>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Connection Modal -->
+<div class="modal modal-lg fade bg-fade" id="connectionModal" tabindex="1" aria-labelledby="connectionModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header" style="border-bottom: 0px">
+        <h1 class="modal-title fs-5" id="connectionModalLabel">
+          Access Request
+          <span *ngIf="loader == true" class="loader" style="margin-left: 20px"></span>
+        </h1>
+        <br />
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-info" *ngIf="!SESSION">
+          You must <a data-bs-dismiss="modal" routerLink="/login">Login</a> to
+          contue. No account yet?
+          <a data-bs-dismiss="modal" href="https://intellex.mininfra.gov.rw/register?package=BASIC">Sign Up now</a>
+        </div>
+        <div class="alert alert-success" *ngIf="alert.success">
+          Your access request has been successfully submitted to the API
+          publisher. Head over to
+          <a routerLink="/connections" class="link" data-bs-dismiss="modal">Connections</a>
+          to track progress. We will also send you an email once your request
+          has been approved.
+        </div>
+        <div class="alert alert-danger" *ngIf="alert.failure">
+          {{ alert.failure }}
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <textarea [(ngModel)]="this.REQUESTED_ENDPOINT.purpose"
+              placeholder="What purpose will you use this API for? " class="form-control"></textarea>
+          </div>
+          <div class="col-12 mt-4">
+            <p>
+              By submitting this request, you confirm that you have read,
+              understood, and accepted the terms of
+              <a class="btn-link cursor-pointer" (click)="$('#data-sharing-agreements').toggle('fast')">Data Sharing
+                Agreement</a>. Please
+              <a class="btn-link cursor-pointer" (click)="$('#data-sharing-agreements').toggle('fast')">click here to
+                read the terms</a>.
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12" style="display: none" id="data-sharing-agreements">
+            <h5>Data Sharing Agreement</h5>
+            <p class="text-muted">
+              <em>By requesting API access, you agree to the terms and conditions
+                outlined below for the use, sharing, and protection of data
+                accessed via our platform. Please review these terms
+                carefully:</em>
+            </p>
+            <ol>
+              <li class="mb-3">
+                <strong>Data Usage:</strong> The data provided through the API
+                is to be used in a manner consistent with the
+                <a class="link link-primary cursor-pointer" data-bs-toggle="modal"
+                  data-bs-target="#termsModal">platform's terms and conditions</a>. You agree to use the data
+                responsibly, respecting the rights
+                and confidentiality of all parties involved, and to avoid any
+                misuse, unauthorized redistribution, or actions that could harm
+                the integrity or purpose of the data. Failure to adhere to
+                responsible use may result in the suspension of access rights.
+              </li>
+              <li class="mb-3">
+                <strong>Confidentiality and Privacy:</strong> You agree to treat
+                any sensitive or confidential data accessed through this
+                platform in compliance with applicable data privacy laws.
+                Personal data should not be shared with unauthorized parties or
+                used in a manner that infringes on the privacy of individuals.
+              </li>
+              <li class="mb-3">
+                <strong>Data Security:</strong> You are responsible for
+                implementing robust security measures to protect the data
+                accessed. This includes but is not limited to secure storage,
+                data encryption, and restricted access to ensure the data
+                remains protected from unauthorized access or breaches.
+              </li>
+              <li class="mb-3">
+                <strong>Data Integrity:</strong> You agree to take appropriate
+                measures to maintain the integrity and accuracy of the data
+                provided through the API. Misuse, alteration, or
+                misrepresentation of the data is prohibited.
+              </li>
+              <li class="mb-3">
+                <strong>Compliance and Auditing:</strong> You agree to comply
+                with any auditing requests made by the data provider to ensure
+                adherence to these terms. Non-compliance may result in
+                suspension or termination of access privileges.
+              </li>
+              <li class="mb-3">
+                <strong>Intellectual Property:</strong> The data and API
+                services accessed are the intellectual property of the data
+                provider or the platform. Redistribution, republishing, or
+                sublicensing of the data is strictly prohibited unless
+                explicitly permitted.
+              </li>
+              <li class="mb-3">
+                <strong>Termination of Access:</strong> Access may be revoked at
+                any time, with or without notice, if there is evidence of a
+                violation of these terms or misuse of the data provided.
+              </li>
+              <li class="mb-3">
+                <strong>Indemnification:</strong> You agree to indemnify and
+                hold harmless the platform from any claims, damages, or
+                liabilities resulting from misuse or unauthorized access to the
+                data.
+              </li>
+            </ol>
+          </div>
+        </div>
+        <!-- Action Buttons -->
+        <div class="modal-footer" *ngIf="SESSION">
+          <button type="button" id="submitButton" class="btn btn-secondary btn-round" (click)="requestConnection()">
+            Connect
+            <span *ngIf="loader == true" class="loader" style="margin-left: 20px"></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Connection Modal -->
+
+<div class="modal modal-xl fade bg-fade" id="apiTestBench" tabindex="1" aria-labelledby="apiTestBench"
+  aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="apiTestBench">
+          Let's try it out
+          <span *ngIf="loader == true" class="loader" style="margin-left: 20px"></span>
+        </h1>
+        <br />
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <app-api-test-bench [(endpoint)]="endpoint" [params]="params" [headers]="headers" [multipart]="multipart"
+          [isUrlEditable]="false" />
+      </div>
+    </div>
+  </div>
+</div>

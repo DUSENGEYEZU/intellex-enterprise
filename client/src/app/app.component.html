@@ -1,0 +1,346 @@
+<!-- Network Alert Banner -->
+<div id="network-alert-danger">Network connection is lost. Reconnecting...</div>
+<div id="network-alert-success">Network is back online.</div>
+<!-- Sidebar -->
+<div *ngIf="SESSION" class="sidebar" data-background-color="dark">
+    <div class="sidebar-logo">
+        <!-- Logo Header -->
+        <div class="logo-header" data-background-color="dark">
+            <a href="https://intellex.dev" class="logo text-white">
+                <img src="assets/img/intellex-logo.png" alt="navbar brand" class="navbar-brand" height="27" />
+                <!-- <strong>Intellex</strong> -->
+            </a>
+            <div class="nav-toggle">
+                <button class="btn btn-toggle toggle-sidebar">
+                    <i class="gg-menu-right"></i>
+                </button>
+                <button class="btn btn-toggle sidenav-toggler">
+                    <i class="gg-menu-left"></i>
+                </button>
+            </div>
+            <button class="topbar-toggler more">
+                <i class="gg-more-vertical-alt"></i>
+            </button>
+        </div>
+        <!-- End Logo Header -->
+    </div>
+    <div class="sidebar-wrapper scrollbar scrollbar-inner">
+        <div class="sidebar-content">
+            <ul class="nav nav-secondary">
+                <li class="nav-item">
+                    <a routerLink="/analytics" routerLinkActive="active">
+                        <i class="fas fa-chart-line"></i>
+                        <p>Analytics</p>
+                    </a>
+                </li>
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">My APIs</h4>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/endpoints" routerLinkActive="active">
+                        <i class="fas fa-code"></i>
+                        <p>Endpoints</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/endpoints/groups" routerLinkActive="active">
+                        <i class="fas fa-layer-group"></i>
+                        <p>Groups</p>
+                    </a>
+                </li>
+                <!-- <li class="nav-item">
+                    <a routerLink="/endpoints/products" routerLinkActive="active">
+                        <i class="fas fa-cubes"></i>
+                        <p>Products</p>
+                    </a>
+                </li> -->
+
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Integrations</h4>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/connections/inbound" routerLinkActive="active">
+                        <i class="fas fa-sign-in-alt"></i>
+                        <p>Inbound <span class="badge badge-danger"
+                                *ngIf="INCOMING_CONNECTION_REQUESTS > 0">{{INCOMING_CONNECTION_REQUESTS}}</span></p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/connections/outbound" routerLinkActive="active">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p>Outbound</p>
+                    </a>
+                </li>
+
+                <li class="nav-section">
+                    <span class="sidebar-mini-icon">
+                        <i class="fa fa-ellipsis-h"></i>
+                    </span>
+                    <h4 class="text-section">Exchange</h4>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/traffic" routerLinkActive="active">
+                        <i class="fas fa-exchange-alt" aria-hidden="true"></i>
+                        <p>Traffic</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/marketplace" routerLinkActive="active">
+                        <i class="fas fa-globe" aria-hidden="true"></i>
+                        <p>Marketplace</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<!-- End Sidebar -->
+
+<div class="main-panel" [ngStyle]="{'width':panelWidth}">
+
+    <div class="main-header" [ngStyle]="{'width':mainHeaderWidth}">
+        <div class="main-header-logo">
+            <!-- Logo Header -->
+            <div class="logo-header" data-background-color="dark">
+                <a href="https://intellex.dev" class="logo text-white">
+                    <img src="assets/img/intellex-logo.png" alt="navbar brand" class="navbar-brand" height="27" />
+                    <!-- Intellex -->
+                </a>
+                <div class="nav-toggle" *ngIf="SESSION">
+                    <button class="btn btn-toggle toggle-sidebar">
+                        <i class="gg-menu-right"></i>
+                    </button>
+                    <button class="btn btn-toggle sidenav-toggler">
+                        <i class="gg-menu-left"></i>
+                    </button>
+                </div>
+                <button class="topbar-toggler more">
+                    <i class="gg-more-vertical-alt"></i>
+                </button>
+            </div>
+            <!-- End Logo Header -->
+        </div>
+        <!-- Navbar Header -->
+        <nav class="navbar navbar-header navbar-header-transparent navbar-expand-lg border-bottom">
+            <a href="https://intellex.dev"><img src="assets/img/logo.png" alt="navbar brand"
+                    class="navbar-brand alt-brand" height="27" *ngIf="!SESSION" /></a>
+            <div class="container-fluid">
+                <nav class="navbar navbar-header-left navbar-expand-lg navbar-form nav-search p-0 d-none d-lg-flex"
+                    *ngIf="SESSION">
+                    <!-- -- Other collapsible menus items on the left-- -->
+                    <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                        <li class="nav-item hidden-caret">
+                            <a routerLink="/endpoints" class="nav-link" routerLinkActive="active">Endpoints</a>
+                        </li>
+                        <li class="nav-item hidden-caret">
+                            <a routerLink="/endpoints/groups" class="nav-link" routerLinkActive="active">API Groups</a>
+                        </li>
+                        <li class="nav-item hidden-caret">
+                            <a routerLink="/traffic" class="nav-link" routerLinkActive="active">Traffic</a>
+                        </li>
+                        <li class="nav-item hidden-caret">
+                            <a routerLink="/marketplace" class="nav-link" routerLinkActive="active">Marketplace</a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <ul class="navbar-nav topbar-nav ms-md-auto align-items-center">
+                    <!-- Action Buttons Desktop-->
+                    <div *ngIf="!SESSION" class="action-buttons-desktop">
+                        <div class="btn-group" role="group" style="width: 100%;">
+                            <a href="/register?package=BASIC" class="btn btn-outline-alt"
+                                style="white-space: nowrap; border-radius: 0px;">Sign Up</a>
+                            <a routerLink="/login" class="btn btn-secondary" style="border-radius: 0px;">Login</a>
+                        </div>
+                    </div>
+                    <!-- End Action Buttons Desktop-->
+
+                    <li class="nav-item topbar-user dropdown hidden-caret" *ngIf="SESSION">
+                        <a class="dropdown-toggle profile-pic" data-bs-toggle="dropdown" href="#" aria-expanded="false">
+                            <div class="avatar-sm"
+                                style="padding: 8px; border: 1px solid #270650; border-radius: 20px;color: #270650;font-weight: bolder;">
+                                <span>{{SESSION.first_name[0]}} {{SESSION.last_name[0]}}</span>
+                            </div>
+                        </a>
+
+                        <ul class="dropdown-menu dropdown-user animated fadeIn">
+                            <div class="dropdown-user-scroll scrollbar-outer">
+                                <li>
+                                    <div class="user-box">
+                                        <div class="u-text">
+                                            <h4>{{SESSION.first_name}} {{SESSION.last_name}}</h4>
+                                            <p class="text-muted">On Intellex</p>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <div class="dropdown-divider"></div>
+                                    <small class="ms-2 mb-1 text-muted">Workspaces</small><br />
+                                    <a class="dropdown-item cursor-pointer" *ngFor="let ws of USER_WORKSPACES"
+                                        href="/workspace/{{ws.workspace_id}}">{{ws.workspace_name}}</a>
+                                    <!-- <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="#">My Profile</a> -->
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item" href="" (click)="logout()">Logout</a>
+                                </li>
+                            </div>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <!-- End Navbar -->
+        <!-- Action Buttons Mobile-->
+        <div *ngIf="!SESSION" class="action-buttons-mobile">
+            <div class="btn-group" role="group" style="width: 100%;">
+                <a href="https://intellex.mininfra.gov.rw/register?package=BASIC" class="btn btn-outline-alt"
+                    style="white-space: nowrap; border-radius: 0px;">Sign Up</a>
+                <a routerLink="/login" class="btn btn-secondary" style="border-radius: 0px;">Login</a>
+            </div>
+        </div>
+        <!-- End Action Buttons Mobile-->
+    </div>
+    <div class="container">
+        <div class="page-inner">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="container-fluid d-flex justify-content-between">
+            <nav class="pull-left">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <a class="nav-link text-secondary" href="https://intellex.dev">
+                            Intellex
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="copyright">
+                Intellex<sup>&trade;</sup> &copy; 2024 All rights reserved.
+            </div>
+        </div>
+    </footer>
+</div>
+
+
+<!-- Terms and Conditions -->
+<div class="modal modal-lg fade bg-fade" id="termsModal" tabindex="1" aria-labelledby="connectionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12" style="width: 90%; padding: 22px 46px;text-align: justify;">
+                        <h4>Intellex Platform Terms and Conditions</h4>
+                        <h5>1. Definitions and Scope of Service</h5>
+                        <p>
+                            <strong>Intellex Platform</strong>: The data exchange environment provided by Intellex,
+                            including the web interface, database management, back-end systems, and API access endpoints
+                            for data sharing between users.
+                        </p>
+                        <p>
+                            <strong>User</strong>: Any individual or organization registered on Intellex with the intent
+                            to request, provide, or manage access to APIs.
+                        </p>
+                        <p>
+                            <strong>API</strong>: Any Application Programming Interface resource on the Intellex
+                            platform facilitating secure data exchanges.
+                        </p>
+                        <p>
+                            <strong>Metadata</strong>: Non-content data collected through data exchanges, such as API
+                            access logs, user records, timestamps, and agreements related to exchanges.
+                        </p>
+                        <p>
+                            <strong>Content</strong>: The actual data exchanged through APIs, which Intellex does not
+                            read or store.
+                        </p>
+
+                        <h5>2. Data Privacy and Collection</h5>
+                        <p><strong>Collected Data:</strong></p>
+                        <ul>
+                            <li><strong>User Registration</strong>: Intellex collects email, organization, and contact
+                                information to identify and authenticate users.</li>
+                            <li><strong>Usage Records</strong>: Data related to user interactions with the platform,
+                                such as API requests, timestamps, and error logs.</li>
+                            <li><strong>API Catalogues</strong>: Data related to API listings published by platform
+                                users for the purposes of making it available for other consumers.</li>
+                        </ul>
+                        <p><strong>Personal Data Usage:</strong> Personal data is mainly used for platform
+                            functionality. It can also be used for customer support, to enhance
+                            user experience, and to identify usage trends.</p>
+                        <p><strong>No Third-Party Data Sharing:</strong> Intellex does not share personal information
+                            with third parties except as required by law.</p>
+                        <p><strong>Cookies and Tracking:</strong> Cookies are used to maintain session data, remember
+                            user preferences, and track usage actions. Users may adjust browser settings for cookie
+                            preferences, though this may impact functionality.</p>
+
+                        <h5>3. Metadata Collection and Usage</h5>
+                        <p><strong>Purpose of Metadata Collection:</strong> Metadata is collected to improve user
+                            experience, track API usage, and provide security monitoring for Intellex operations.</p>
+                        <p><strong>Data Retention:</strong> Metadata is stored as long as necessary for Intellex’s
+                            operational needs. Once no longer required, data may be anonymized or securely deleted.</p>
+                        <p><strong>Types of Metadata Collected:</strong> Includes API request logs, session history,
+                            timestamps, status information, and agreements tied to data-sharing.</p>
+                        <p><strong>User Access to Metadata:</strong> Users can request access to their own metadata and
+                            view logs related to API exchanges.</p>
+
+                        <h5>4. User Responsibilities and Obligations</h5>
+                        <p><strong>Data Usage Compliance:</strong> Users must use data accessed via Intellex as per the
+                            terms of data-sharing agreements with API providers.</p>
+                        <p><strong>Prohibited Actions:</strong> Unauthorized distribution, replication, or commercial
+                            use of data obtained through Intellex APIs without consent is prohibited.</p>
+                        <p><strong>API Key Management:</strong> Users are responsible for safeguarding their API keys.
+                            Misuse of keys may lead to account suspension.</p>
+                        <p><strong>Legal Compliance:</strong> Users must comply with data protection and privacy laws,
+                            such as GDPR, and other applicable local laws.</p>
+
+                        <h5>5. Security Measures</h5>
+                        <p><strong>Access Control:</strong> Access to Intellex and its APIs is restricted through
+                            authentication and authorization processes.</p>
+                        <p><strong>Encryption:</strong> All data exchanges use secure encryption protocols to protect
+                            against interception.</p>
+                        <p><strong>Audit Logs:</strong> Intellex retains logs of API requests and metadata access for
+                            security auditing and forensic analysis.</p>
+
+                        <h5>6. Intellectual Property Rights</h5>
+                        <p><strong>Platform Content Ownership:</strong> All code, text, and multimedia on Intellex,
+                            including its design, are the property of Intellex and cannot be reproduced without
+                            permission.</p>
+                        <p><strong>User-Generated Content:</strong> Users retain ownership of their data, but by using
+                            Intellex, they grant Intellex a non-exclusive license to manage and distribute metadata for
+                            operational purposes.</p>
+
+                        <h5>7. Limitation of Liability</h5>
+                        <p><strong>Data Responsibility:</strong> Intellex is not liable for the content or legality of
+                            exchanged data. API providers are responsible for compliance with relevant laws.</p>
+                        <p><strong>Platform Downtime and Errors:</strong> As much as Intellex is committed to
+                            maintaining the highest level of platform performance, Intellex is not liable for damages
+                            due to
+                            technical issues such as downtime, data loss, or unauthorized access from external attacks.
+                        </p>
+
+                        <h5>8. Modification of Terms</h5>
+                        <p><strong>Change Notification:</strong> Any updates to these Terms will be posted on Intellex
+                            and communicated via email. Users are responsible for reviewing and agreeing to such
+                            updates.</p>
+                        <p><strong>User Acceptance:</strong> Continued use of Intellex after changes to the Terms
+                            implies acceptance of the revised terms.</p>
+
+                        <h5>9. Contact Information</h5>
+                        <p><strong>Support and Feedback:</strong> Users may reach out to Intellex for inquiries
+                            regarding these terms at info&#64;intellex.dev</p>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Terms and Conditions Modal -->

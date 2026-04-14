@@ -1,0 +1,128 @@
+.btn-outline-alt {
+  border-color: #270650;
+  color: #270650;
+}
+
+.btn-outline-alt:hover {
+  color: #ffffff;
+  background-color: #270650;
+}
+
+.btn-secondary {
+  background-color: #270650 !important;
+  color: white;
+  border: 1px solid #270650 !important;
+}
+.user-stats .number {
+  font-weight: 800;
+}
+.user-stats .title {
+  color: #7d7b7b;
+}
+.user-stats [class^="col"] {
+  border-right: 1px solid #ebebeb;
+}
+.user-stats [class^="col"]:last-child {
+  border-right: 0;
+}
+
+/* DISPLAY SKELETON - LOADER */
+@keyframes pulse {
+  0% {
+    background-color: #94a3b8;
+  }
+
+  50% {
+    background-color: #cbd5e1;
+  }
+
+  100% {
+    background-color: #94a3b8;
+  }
+}
+.product-loader-skeleton {
+  display: flex;
+}
+.card-skeleton {
+  display: flex;
+  justify-content: space-around;
+  padding: 20px;
+  margin: 20px;
+  border-radius: 3px;
+  background-color: #e2e8f0;
+  box-shadow: 0 9px 33px rgba(0, 0, 0, 0.07);
+}
+
+.card-img-skeleton {
+  margin-top: 10px;
+  width: 80%;
+  height: 100px;
+  background-color: #94a3b8;
+  border: none;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+.category-skeleton {
+  display: block;
+  width: 50%;
+  height: 8px;
+  background-color: #94a3b8;
+  margin: auto;
+  animation: pulse 2s infinite ease-in-out;
+}
+.product-name-skeleton {
+  width: 90%;
+  height: 10px;
+  margin: auto;
+  margin-top: 5px;
+  background-color: #94a3b8;
+  animation: pulse 2s infinite ease-in-out;
+}
+.product-price-skeleton {
+  display: block;
+  width: 50%;
+  height: 10px;
+  background-color: #94a3b8;
+  margin: auto;
+  margin-top: 10px;
+  animation: pulse 2s infinite ease-in-out;
+}
+
+/* DISPLAY SKELETON - LOADER */
+
+.code-snippet{
+  background-color: #ebeff2;
+  padding: 3px;
+  font-family: Courier, monospace;
+  border-radius: 6px;
+}
+
+.marketplace-catalog-nav-card {
+  position: sticky;
+  top: 1rem;
+  text-align: left;
+}
+
+.marketplace-catalog-endpoint-list {
+  max-height: min(60vh, 520px);
+  overflow-y: auto;
+  width: 100%;
+  align-self: stretch;
+}
+
+.marketplace-catalog-endpoint-link {
+  text-align: left !important;
+  width: 100%;
+  white-space: normal;
+  word-break: break-word;
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}
+
+/* Some themes use flex on .list-group-item-action and center content */
+.marketplace-catalog-endpoint-list .list-group-item-action {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.35rem;
+  row-gap: 0.15rem;
+}

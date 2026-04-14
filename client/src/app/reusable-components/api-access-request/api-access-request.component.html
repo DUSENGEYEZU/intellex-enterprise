@@ -1,0 +1,122 @@
+<!-- Connection Modal -->
+<div class="modal modal-lg fade bg-fade" id="connectionModal" tabindex="1" aria-labelledby="connectionModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="border-bottom: 0px;">
+                <h1 class="modal-title fs-5" id="connectionModalLabel">Access Request <span *ngIf="loader == true"
+                        class="loader" style="margin-left: 20px;"></span></h1> <br>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" *ngIf="!loader">
+                <!-- CONNECTION STATUS INDICATOR -->
+                <div class="">
+                    <div class=" mb-4" *ngIf="is_workspace_connected === false">
+                        <span>You are not connected to this API. </span> <br>
+                    </div>
+                    <div class=" mb-4" *ngIf="workspace_connection_status === 'DENIED'">
+                        <span class="text-warning">Your recent connection request has been denied by the API publisher!
+                            Want to give it another try?</span> <br>
+                    </div>
+                    <div *ngIf="workspace_connection_status === 'GRANTED'">
+                        <div class="mb-3">
+                            You already have access to this API
+                        </div>
+                        <strong>api-key: </strong><span class="text-secondary"
+                            style="margin-left:0px; padding-top: 10px;padding-bottom: 10px;">{{connection_api_key}}</span>
+                    </div>
+                    <div class=" mb-4" *ngIf="workspace_connection_status === 'NEW'">
+                        <span>Your recently submited access request to this API. Please wait until you hear from the API
+                            publisher. In the meantime, feel free to explore other <a
+                                routerLink="/marketplace">interesting APIs</a>. </span> <br>
+                    </div>
+                </div>
+                <!-- CONNECTION STATUS -->
+
+                <div class="alert alert-info" *ngIf="!SESSION">You must <a
+                        href="https://intellex.mininfra.gov.rw/login">Login</a> to continue. No account yet? <a
+                        href="https://intellex.mininfra.gov.rw/register?package=BASIC">Sign Up Now</a></div>
+                <div class="alert alert-success" *ngIf="alert.success">Your access request has been successfully
+                    submitted to the API publisher. Head over to <a routerLink="/connections" class="link"
+                        data-bs-dismiss="modal">Connections</a> to track progress. We will also send you an email once
+                    your request has been approved.</div>
+                <div class="alert alert-danger" *ngIf="alert.failure">{{alert.failure}}</div>
+                <div class="row" *ngIf="SESSION && !is_workspace_connected">
+                    <div class="col-12">
+                        <textarea [(ngModel)]="purpose"
+                            placeholder="What purpose will you use this API for? You can add your contact details if you wish to be contacted by the publisher and increase chances of getting access."
+                            class="form-control"></textarea>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <p>By submitting this request, you confirm that you have read, understood, and accepted the
+                            terms of <a class="btn-link cursor-pointer"
+                                (click)="$('#data-sharing-agreements').toggle('fast');">Data Sharing Agreement</a>.
+                            Please <a class="btn-link cursor-pointer"
+                                (click)="$('#data-sharing-agreements').toggle('fast');">click here to read the
+                                terms</a>.</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12" style="display:none;" id="data-sharing-agreements">
+                        <h5>Data Sharing Agreement</h5>
+                        <p class="text-muted"><em>By requesting API access, you agree to the terms and conditions
+                                outlined below for the use,
+                                sharing, and protection of data accessed via our platform. Please review these terms
+                                carefully:</em>
+                        </p>
+                        <ol>
+                            <li class="mb-3"><strong>Data Usage:</strong> The data provided through the API is to be
+                                used in a manner consistent with the <a class="link link-primary cursor-pointer"
+                                    data-bs-toggle="modal" data-bs-target="#termsModal">platform's terms and
+                                    conditions</a>. You agree to use the data responsibly, respecting the rights and
+                                confidentiality of all parties involved, and to avoid any misuse, unauthorized
+                                redistribution, or actions that could harm the integrity or purpose of the data. Failure
+                                to adhere to responsible use may result in the suspension of access rights.</li>
+                            <li class="mb-3"><strong>Confidentiality and Privacy:</strong> You agree to treat any
+                                sensitive or
+                                confidential data accessed through this platform in compliance with applicable data
+                                privacy
+                                laws. Personal data should not be shared with unauthorized parties or used in a manner
+                                that
+                                infringes on the privacy of individuals.</li>
+                            <li class="mb-3"><strong>Data Security:</strong> You are responsible for implementing robust
+                                security
+                                measures to protect the data accessed. This includes but is not limited to secure
+                                storage,
+                                data encryption, and restricted access to ensure the data remains protected from
+                                unauthorized access or breaches.</li>
+                            <li class="mb-3"><strong>Data Integrity:</strong> You agree to take appropriate measures to
+                                maintain the
+                                integrity and accuracy of the data provided through the API. Misuse, alteration, or
+                                misrepresentation of the data is prohibited.</li>
+                            <li class="mb-3"><strong>Compliance and Auditing:</strong> You agree to comply with any
+                                auditing requests
+                                made by the data provider to ensure adherence to these terms. Non-compliance may result
+                                in
+                                suspension or termination of access privileges.</li>
+                            <li class="mb-3"><strong>Intellectual Property:</strong> The data and API services accessed
+                                are the
+                                intellectual property of the data provider or the platform. Redistribution,
+                                republishing, or
+                                sublicensing of the data is strictly prohibited unless explicitly permitted.</li>
+                            <li class="mb-3"><strong>Termination of Access:</strong> Access may be revoked at any time,
+                                with or without notice, if there is evidence of a violation of these terms or misuse of
+                                the
+                                data provided.</li>
+                            <li class="mb-3"><strong>Indemnification:</strong> You agree to indemnify and hold harmless
+                                the platform from any claims, damages, or liabilities resulting from misuse or
+                                unauthorized access to the data.</li>
+                        </ol>
+                    </div>
+                </div>
+                <!-- Action Buttons -->
+                <div class="modal-footer" *ngIf="SESSION && !is_workspace_connected">
+                    <button type="button" id="submitButton" class="btn btn-secondary btn-round"
+                        (click)="requestConnection()">Connect
+                        <span *ngIf="loader" class="loader" style="margin-left: 20px;"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Connection Modal -->

@@ -1,0 +1,63 @@
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div>
+        <h3 class="fw-bold mb-3">Traffic Logs <span *ngIf="loader == true" class="loader"
+                style="margin-left: 20px;"></span></h3>
+        <p class="op-7 mb-2">Keep track of traffic logs to your API endpoints.</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <div class="input-group">
+                <span class="input-group-text">Pick range</span>
+                <input [(ngModel)]="DATES.start" (change)="getProducerTraffic()" type="date" class="form-control">
+                <input [(ngModel)]="DATES.end" (change)="getProducerTraffic()" type="date" class="form-control">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <p class="text-center" *ngIf="TRAFFIC_DATA.length == 0">No traffic records for the specified dates</p>
+        <div class="table-responsive" *ngIf="TRAFFIC_DATA.length > 0">
+            <div id="basic-datatables_wrapper" class="dataTables_wrapper container-fluid dt-bootstrap4">
+                <div class="row">
+                    <div class="col-sm-12 table-responsive">
+                        <table id="basic-datatables" class="display table table-striped table-hover dataTable"
+                        role="grid" aria-describedby="basic-datatables_info">
+                        <thead>
+                            <tr role="row">
+                                <th class="sorting_asc" tabindex="0" aria-controls="basic-datatables" rowspan="1" colspan="1" aria-sort="ascending" style="width: 370.703px;">Endpoint</th>
+                                <th class="sorting" tabindex="0" aria-controls="basic-datatables" rowspan="1"
+                                    colspan="1" style="width: 190.016px;">Status</th>
+                                <th class="sorting" tabindex="0" aria-controls="basic-datatables" rowspan="1"
+                                    colspan="1"
+                                    style="width: 85.7969px;">Context</th>
+                                <th class="sorting" tabindex="0" aria-controls="basic-datatables" rowspan="1"
+                                    colspan="1" style="width: 186.547px;">Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr role="row" *ngFor="let traffic of TRAFFIC_DATA">
+                                <td>
+                                    <a [routerLink]="['/marketplace/endpoint']" [queryParams]="{'id': traffic.endpoint_id, 'title': traffic.endpoint_summary, 'referer':'traffic'}">{{traffic.endpoint_summary}}</a> <br>
+                                    <small class="text-muted">{{traffic.service_name}}</small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-dark" *ngIf="traffic.t_status === 'BLOCKED'">{{traffic.t_status}}</span>
+                                    <span class="badge badge-success" *ngIf="traffic.t_status === 'PASSED'">{{traffic.t_status}}</span>
+                                    <span class="badge badge-danger" *ngIf="traffic.t_status === 'FAILED'">{{traffic.t_status}}</span>
+                                </td>
+                                <td>{{traffic.t_remarks || "Unspecified"}}</td>
+                                <td>{{traffic.t_created_at | date:'medium'}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

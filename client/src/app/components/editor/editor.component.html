@@ -1,0 +1,6 @@
+<ngx-monaco-editor
+  [options]="editorOptions()"
+  [ngModel]="code"
+  (ngModelChange)="codeChange.emit($event)"
+  class="editor"
+></ngx-monaco-editor>

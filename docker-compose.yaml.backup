@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  intellex_db:
+    image: postgres:17-alpine
+    container_name: intellex-db
+    restart: always
+    environment:
+      POSTGRES_DB: intellex-db
+      POSTGRES_USER: intellex-db-usr
+      POSTGRES_PASSWORD: wvMPjwJ3KrdjdkjPfk80dD
+    volumes:
+      - intellex_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  intellex_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000" #backend
+      - "9001:9001" #frontend
+    depends_on:
+      - intellex_db
+    environment:
+      DATABASE_HOST: intellex-db
+      DATABASE_PORT: 5432
+      DATABASE_USER: intellex-db-usr
+      DATABASE_PASSWORD: wvMPjwJ3KrdjdkjPfk80dD
+      DATABASE_NAME: intellex-db
+      NOTIFICATION_API: https://mail.intellex.dev/email/send
+      SECRET: hE1DQaSZmyW0HMk7P2PyS523GvBQ7c
+      DOMAIN_HOST: http://localhost:9000
+      WEB_CLIENT_URL: http://localhost:9001
+      SERVER_PORT: 9000
+    volumes:
+      - .:/intellex_app
+    restart: always
+
+volumes:
+  intellex_data:

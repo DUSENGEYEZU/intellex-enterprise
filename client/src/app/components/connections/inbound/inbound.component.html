@@ -1,0 +1,152 @@
+<div class="d-flex align-items-left align-items-md-center flex-column flex-md-row pt-2 pb-4">
+    <div>
+        <h3 class="fw-bold mb-3">Inbound Integrations <span *ngIf="loader == true" class="loader"
+                style="margin-left: 20px;"></span></h3>
+        <p class="op-7 mb-2">Manage access to your published APIs and track your own connection
+            requests to APIs published by others. Grant or revoke access to your APIs, providing approved users with
+            auto-generated unique API keys.
+        </p>
+    </div>
+</div>
+<div class="row">
+    <div class="card">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-12">
+                    <ul class="nav nav-tabs">
+                        <li class="nav-item">
+                            <button class="nav-link active" aria-current="page" id="access-tab" data-bs-toggle="tab" data-bs-target="#access" type="button" role="tab" aria-controls="access" aria-selected="true" >Endpoints ({{INTERNAL_API_ACCESS.length}})</button>
+                        </li>
+                        <li class="nav-item">
+                            <button class="nav-link" id="connections-tab" data-bs-toggle="tab" data-bs-target="#connections" type="button" role="tab" aria-controls="connections" aria-selected="false">Groups ({{GROUP_CONNECTIONS.length}})</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="card">
+        <!-- Tab Content -->
+        <div class="tab-content" id="apiTabsContent">
+            <!-- Access to My APIs Tab -->
+            <div class="tab-pane fade show active" id="access" role="tabpanel" aria-labelledby="access-tab">
+                <div class="p-3">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <th>API</th>
+                                <th>Requester</th>
+                                <th class="text-end">Status | Action</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let access of INTERNAL_API_ACCESS">
+                                    <td>
+                                        <a [routerLink]="['/marketplace/endpoint']" [queryParams]="{'id': access.endpoint_id, 'title': access.endpoint_summary, 'referer':'connections'}"><span *ngIf="access.status === 'NEW'" title="New Request" class="badge badge-danger text-danger" style="border-radius: 9px; padding: 2px 6px;">.</span> {{access.endpoint_summary}}</a> <br>
+                                        <small>Product: <span class="text-muted">{{access.service_name}}</span></small> 
+                                        <p style="background: #f5f7fd;border-radius: 8px;padding: 6px;">
+                                            <small><strong>Purpose: </strong> {{access.purpose || '-'}}</small>
+                                        </p>
+                                    </td>
+                                    <td>
+                                        <strong>{{access.requester_user_name}}</strong> | <span class="text-muted">{{access.consumer_workspace_name}}</span><br>
+                                        <small class="text-muted">{{access.created_at | date:'medium'}}</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <!-- Show this if access is not granted yet -->
+                                        <div *ngIf="access.status === 'NEW'" class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary" (click)="grantConnection(access.id)"><span *ngIf="!loader"><i class="fa fa-check"></i> Grant</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button>
+                                            <button type="button" class="btn btn-dark" (click)="cancelConnection(access.id)"><span *ngIf="!loader"><i class="fa fa-times"></i> Deny</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button>
+                                        </div>
+                                        <!-- Show this if access is granted -->
+                                         <div *ngIf="access.status === 'GRANTED'">
+                                            <span class="badge text-primary me-3">{{access.status}}</span>
+                                            <button type="button" class="btn btn-dark" (click)="cancelConnection(access.id)"><span *ngIf="!loader"><i class="fa fa-times"></i> Deny</span> <span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button> <br>
+                                         </div>
+                                         <!-- Show this if access is denied -->
+                                        <div *ngIf="access.status === 'DENIED'">
+                                            <span class="badge text-danger me-3">{{access.status}}</span> 
+                                            <button type="button" class="btn btn-primary mt-2" (click)="grantConnection(access.id)"><span *ngIf="!loader"><i class="fa fa-check"></i> Grant</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button> <br>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Connections to Groups -->
+            <div class="tab-pane fade" id="connections" role="tabpanel" aria-labelledby="connections-tab">
+                <div class="p-3">
+                    <p class="text-center" *ngIf="GROUP_CONNECTIONS.length==0">No connections to any of <a routerLink="/endpoints/groups">your groups</a> yet!</p>
+                    <div class="table-responsive" *ngIf="GROUP_CONNECTIONS.length > 0">
+                        <table class="table">
+                            <thead>
+                                <th>Group</th>
+                                <th>Requester</th>
+                                <th class="text-end">Status | Action</th>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let connection of GROUP_CONNECTIONS">
+                                    <td>
+                                        <a class="btn-link" [routerLink]="['/marketplace/endpoint/group']" [queryParams]="{'id': connection.group_id, 'name': connection.group_name, 'desc':connection.group_description, 'ws':utilsService.getMainWorkspace()}">
+                                            <span *ngIf="connection.status === 'NEW'" title="New Request" class="badge badge-danger text-danger" style="border-radius: 9px; padding: 2px 6px;">.</span> {{ connection.group_name }}
+                                        </a> 
+                                        <br>
+                                        <p style="background: #f5f7fd;border-radius: 8px;padding: 6px;">
+                                            <small><strong>Purpose: </strong> {{connection.purpose || '-'}}</small><br>
+                                        </p>
+                                        <p style="background: #f5f7fd;border-radius: 8px;padding: 6px;" *ngIf="connection.api_key">
+                                            <small><strong>API-Key: </strong> <span style="font-family:monospace;color: brown;">{{connection.api_key}}</span></small>
+                                        </p>
+                                        <span class=""></span>
+                                    </td>
+                                    <td>
+                                        <strong>{{connection.requester_user_name}}</strong> | <span class="text-muted">{{connection.consumer_workspace_name}}</span><br>
+                                        <small class="text-muted">{{connection.created_at | date:'medium'}}</small>
+                                    </td>
+                                    <td class="text-end">
+                                        <!-- Show this if connection is not granted yet -->
+                                        <div *ngIf="connection.status === 'NEW'" class="btn-group" role="group">
+                                            <button type="button" class="btn btn-primary" (click)="grantConnection(connection.id)"><span *ngIf="!loader"><i class="fa fa-check"></i> Grant</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button>
+                                            <button type="button" class="btn btn-dark" (click)="cancelConnection(connection.id)"><span *ngIf="!loader"><i class="fa fa-times"></i> Deny</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button>
+                                        </div>
+                                        <!-- Show this if connection is granted -->
+                                         <div *ngIf="connection.status === 'GRANTED'">
+                                            <span class="badge text-primary me-3">{{connection.status}}</span>
+                                            <button type="button" class="btn btn-dark" (click)="cancelConnection(connection.id)"><span *ngIf="!loader"><i class="fa fa-times"></i> Deny</span> <span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button> <br>
+                                         </div>
+                                         <!-- Show this if connection is denied -->
+                                        <div *ngIf="connection.status === 'DENIED'">
+                                            <span class="badge text-danger me-3">{{connection.status}}</span> 
+                                            <button type="button" class="btn btn-primary mt-2" (click)="grantConnection(connection.id)"><span *ngIf="!loader"><i class="fa fa-check"></i> Grant</span><span *ngIf="loader == true" class="loader" style="margin-left: 20px;"></span></button> <br>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Insert content here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Sample response modal -->
+<div class="modal fade bg-fade" id="apiModal" tabindex="1" aria-labelledby="apiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="apiModalLabel">Sample Response</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <pre class="text-bg-light" style="max-height:500px;border-radius:5px;font-size:xx-small;padding:10px;">{{SAMPLE_API_RESPONSE | json}}</pre>
+            </div>
+        </div>
+    </div>
+</div>
